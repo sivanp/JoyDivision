@@ -1,0 +1,229 @@
+import ij.IJ;
+import ij.gui.Roi;
+
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+
+public class Cell implements Serializable 
+{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	Cells parentCells;
+	private int id;
+
+
+	Cell(int id,Cells parentCells)
+	{
+		this.parentCells = parentCells;
+		this.id = id;
+	}
+
+
+	public int getId() 
+	{
+		return id;
+	}
+
+	@Override
+	public boolean equals(Object o) 
+	{
+		if (!( o instanceof Cell))
+		{
+			return false;
+		}
+		Cell other = (Cell)o;
+		return this.id == other.getId();
+	}
+
+	@Override
+	public int hashCode() {
+		// TODO Auto-generated method stub
+		return  new Integer(id).hashCode();
+	}
+
+	@Override
+	public String toString() 
+	{
+		String res="Cell id:"  + new Integer(id).toString();
+		Set<Integer> frames=getFrames();
+		if(frames!=null){
+			Iterator<Integer> iter = frames.iterator();
+			while(iter.hasNext()){
+				Integer frame=iter.next();
+				Roi roi=this.getLocationInFrame(frame);
+				res+=" "+frame+": "+roi+"; ";
+			}		
+		}
+		Set<Cell> daughters=this.getDaughters();
+		if(daughters==null || daughters.isEmpty()){
+			return res;
+		}
+		res+="\nDaughters:";
+		Iterator<Cell> diter=daughters.iterator();
+		while(diter.hasNext()){
+			Cell daughter=diter.next();
+			res+=" "+daughter.getId();
+		}
+		return res;
+	}
+
+	public Set<Integer> getFrames(){
+//		CellLocations locs=
+		return parentCells.getCl().getFrames(this);
+	}
+
+	public void addParent(Cell parent)
+	{
+		parentCells.getCp().put(parent,this);
+	}
+
+	public void addChild(Cell child)
+	{
+		parentCells.getCp().put( this, child);
+	}
+
+	public Set<Cell> getDaughters()
+	{
+		return parentCells.getCp().getByParent(this);
+	}
+
+	public Set<Cell> getMothers()
+	{
+		return parentCells.getCp().getByChild(this);
+	}
+
+	public void addMother(Cell mother)
+	{
+		if(this.equals(mother)){
+			IJ.showMessage("mother is the same as this cell- cannot add");
+			return;
+		}
+		//no circles are allowed- mother cannot be one of this cell descendants
+		Set<Cell> desc=getAllDescendants();
+		if(desc.contains(mother)){
+			IJ.showMessage("Cannot add mother: mother is a descendant of this cell");
+			return;
+		}
+		parentCells.getCp().put(mother,this);
+	}
+	
+	public Set<Cell> getAllDescendants(){
+		Set<Cell> desc=new HashSet<Cell>();
+		Set<Cell> daughts=this.getDaughters();
+		if(daughts==null || daughts.isEmpty()){
+			return desc;
+		}		
+		Iterator<Cell> diter=daughts.iterator();
+		while(diter.hasNext()){
+			Cell d=diter.next();
+			Set<Cell> gds= d.getAllDescendants(desc);
+			desc.addAll(gds);	
+			desc.add(d);
+		}
+		return desc;
+	}
+	
+	private Set<Cell> getAllDescendants(Set<Cell> desc){
+		Set<Cell> daughts=this.getDaughters();
+		if(daughts==null || daughts.isEmpty()){
+			return new HashSet<Cell>();
+		}		
+		Iterator<Cell> diter=daughts.iterator();
+		while(diter.hasNext()){
+			Cell d=diter.next();
+			Set<Cell> gds= d.getAllDescendants(desc);
+			desc.addAll(gds);
+			desc.add(d);
+		}
+		return desc;
+	}
+	
+
+	public void addDaughter(Cell daughter)
+	{
+		if(this.equals(daughter)){
+			IJ.showMessage("daughter is the same as this cell- cannot add");
+		}
+		//no circles are allowed- daughter cannot have this as one of its descendants
+		Set<Cell> desc=daughter.getAllDescendants();
+		if(desc.contains(this)){
+			IJ.showMessage("Cannot add daughter: daughter is an ancestor of this cell");
+			return;
+		}
+		parentCells.getCp().put(this,daughter);
+	}
+
+	public void removeMother(Cell mother)
+	{
+		parentCells.getCp().removeMomDaughter(mother, this);
+	}
+
+	public void removeDaughter(Cell daughter)
+	{
+		parentCells.getCp().removeMomDaughter(this, daughter);
+	}
+
+	public void addLocation(int frame , Roi roi) 
+	{
+		parentCells.getCl().put(this, frame, roi);
+	}
+
+	public Roi getLocationInFrame(int frame){
+		return parentCells.getCl().getCellLocationInFrame(this, frame);
+	}
+
+	/**
+	 * Dynamically goes over the parentsCells structure to issue a name for this cell 
+	 * @return a String representing the name of this cell
+	 */
+	public String getName(){
+		Set<Cell> moms=this.getMothers();
+		if(moms==null || moms.isEmpty()){
+			return String.valueOf(id);
+		}
+		else{			
+			Cell mom=moms.iterator().next();			
+			//numbering siblings and giving my number in the sorted list 
+			int rank=1;
+			Set<Cell> siblings=mom.getDaughters();
+			Iterator<Cell> siter=siblings.iterator();
+			while(siter.hasNext()){
+				Cell sis=siter.next();
+				if(sis.getId()>id){
+					rank++;
+				}
+			}
+			String name=getName(mom,"")+"_"+rank;
+			return name;
+		}
+
+	}
+
+	private String getName(Cell mom,String name){
+		Set<Cell> moms=mom.getMothers();
+		if(moms==null || moms.isEmpty()){
+			return String.valueOf(mom.getId());
+		}
+		else{
+			Cell gmom=moms.iterator().next();
+			name=getName(gmom,name);
+
+			int rank=1;
+			Set<Cell> siblings=gmom.getDaughters();
+			Iterator<Cell> siter=siblings.iterator();
+			while(siter.hasNext()){
+				Cell sis=siter.next();
+				if(sis.getId()>mom.getId()){
+					rank++;
+				}
+			}
+			return name+"_"+rank;			
+		}
+	}
+
+}
