@@ -96,7 +96,7 @@ public class Cell implements Serializable
 		}
 			
 		if(this.equals(mother)){
-			IJ.showMessage("mother is the same as this cell- cannot add");
+			IJ.showMessage("cannot add: mother is the same as this cell- cannot add");
 			return;
 		}
 		//no circles are allowed- mother cannot be one of this cell descendants
