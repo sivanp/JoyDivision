@@ -170,6 +170,7 @@ public class Cell implements Serializable
 
 	public void addLocation(int frame , Roi roi) 
 	{
+		//TODO should we conduct checks such that a mother cell cannot continue in frames following daughters birth?
 		parentCells.getCl().addLocationToCell(this, frame, roi);
 	}
 
@@ -194,7 +195,7 @@ public class Cell implements Serializable
 			Iterator<Cell> siter=siblings.iterator();
 			while(siter.hasNext()){
 				Cell sis=siter.next();
-				if(sis.getId()>id){
+				if(sis.getId()<id){
 					rank++;
 				}
 			}

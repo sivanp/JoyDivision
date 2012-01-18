@@ -40,15 +40,15 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	//GUI Stuff
 	Panel panel;
 	JFrame frame;
-	Button butGetCell;
-	Button butCellDivision;
-	Button butAddSis;
-	Button butDeleteCell;
-	Button butAddMom;
-	Button butContMode;
-	Button butCellStart;
-	Button butCellEnd;
-	Button butAddLoc;
+	JButton butGetCell;
+	JButton butCellDivision;
+	JButton butAddSis;
+	JButton butDeleteCell;
+	JButton butAddMom;
+	JButton butContMode;
+	JButton butCellStart;
+	JButton butCellEnd;
+	JButton butAddLoc;
 	TextField textCellId;
 	TextField txtCellName;
 	TextField textMomId;
@@ -64,46 +64,46 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		createGui();
 
 
-//		Cell cell1=cellsStruct.addNewCell();		
-//		try {			
-//			Roi roi1=new Roi(100,100,20,20);
-//			cell1.addLocation(1003, roi1);
-//			cell1.addLocation(1002, roi1);
-//			cell1.addLocation(1001, roi1);
-//			Cell cell2=cellsStruct.addNewCell();
-//			cell2.addMother(cell1);
-//			Cell cell3=cellsStruct.addNewCell();
-//			cell2.addDaughter(cell3);
-//			cell1.addMother(cell3);
-//			cell3.addDaughter(cell1);			
-//			IJ.showMessage("before dissociating cell2 and cell1: "+cellsStruct.toString());
-//			cellsStruct.dissociateMotherDaughter(cell2,cell1);
-//			IJ.showMessage("after dissociating cell2 and cell1: "+cellsStruct.toString());			
-//			cellsStruct.remove(cell2);
-//			IJ.showMessage("after deleting 2: "+cellsStruct.toString());
-//			cell3.addMother(cell2);
-//			cell3.addMother(cell1);
-//			cellsStruct.dissociateMotherDaughter(cell3, cell1);
-//			IJ.showMessage("after dissociating cell3 to cell1 wrong: "+cellsStruct.toString());
-//			cellsStruct.dissociateMotherDaughter(cell1, cell3);
-//			IJ.showMessage("after dissociating cell3 to cell1 right: "+cellsStruct.toString());
-//			cell1.addDaughter(cell3);
-//			IJ.showMessage("after adding cell3 to cell1 right: "+cellsStruct.toString());
-//			cellsStruct.remove(cell1);
-//			IJ.showMessage("after removing cell1: "+cellsStruct.toString());
-//			cellsStruct.remove(cell3);
-//			IJ.showMessage("after removing cell3: "+cellsStruct.toString());
-//
-//
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}		
-//		IJ.showMessage("before save: "+cellsStruct.toString());
-//		String filename="C:/Users/sivan-nqb/Desktop/cellStruct";
-//		saveCellsStruct(filename);
-//		Cells cellsStructLoaded = loadCellsStruct(filename);
-//		IJ.showMessage("after save: "+cellsStructLoaded.toString());
+		//		Cell cell1=cellsStruct.addNewCell();		
+		//		try {			
+		//			Roi roi1=new Roi(100,100,20,20);
+		//			cell1.addLocation(1003, roi1);
+		//			cell1.addLocation(1002, roi1);
+		//			cell1.addLocation(1001, roi1);
+		//			Cell cell2=cellsStruct.addNewCell();
+		//			cell2.addMother(cell1);
+		//			Cell cell3=cellsStruct.addNewCell();
+		//			cell2.addDaughter(cell3);
+		//			cell1.addMother(cell3);
+		//			cell3.addDaughter(cell1);			
+		//			IJ.showMessage("before dissociating cell2 and cell1: "+cellsStruct.toString());
+		//			cellsStruct.dissociateMotherDaughter(cell2,cell1);
+		//			IJ.showMessage("after dissociating cell2 and cell1: "+cellsStruct.toString());			
+		//			cellsStruct.remove(cell2);
+		//			IJ.showMessage("after deleting 2: "+cellsStruct.toString());
+		//			cell3.addMother(cell2);
+		//			cell3.addMother(cell1);
+		//			cellsStruct.dissociateMotherDaughter(cell3, cell1);
+		//			IJ.showMessage("after dissociating cell3 to cell1 wrong: "+cellsStruct.toString());
+		//			cellsStruct.dissociateMotherDaughter(cell1, cell3);
+		//			IJ.showMessage("after dissociating cell3 to cell1 right: "+cellsStruct.toString());
+		//			cell1.addDaughter(cell3);
+		//			IJ.showMessage("after adding cell3 to cell1 right: "+cellsStruct.toString());
+		//			cellsStruct.remove(cell1);
+		//			IJ.showMessage("after removing cell1: "+cellsStruct.toString());
+		//			cellsStruct.remove(cell3);
+		//			IJ.showMessage("after removing cell3: "+cellsStruct.toString());
+		//
+		//
+		//		} catch (Exception e) {
+		//			// TODO Auto-generated catch block
+		//			e.printStackTrace();
+		//		}		
+		//		IJ.showMessage("before save: "+cellsStruct.toString());
+		//		String filename="C:/Users/sivan-nqb/Desktop/cellStruct";
+		//		saveCellsStruct(filename);
+		//		Cells cellsStructLoaded = loadCellsStruct(filename);
+		//		IJ.showMessage("after save: "+cellsStructLoaded.toString());
 		//
 		//
 		//		
@@ -117,6 +117,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	 * 
 	 */
 	private void createGui() {
+		IJ.run("Misc...", "divide=Infinity require run");
 		frame = new JFrame("testing!");
 		panel = new Panel(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();	
@@ -169,70 +170,70 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		panel.add(txtMomName,c);
 
 
-		butGetCell = new Button("Get Cell");
+		butGetCell = new JButton("Get Cell");
 		butGetCell.addActionListener(this);
 		c.weightx=0.5;
 		c.gridx=0;
 		c.gridy=2;
 		panel.add(butGetCell,c);
 
-		butCellDivision = new Button("Cell Division");
+		butCellDivision = new JButton("Cell Division");
 		butCellDivision.addActionListener(this);
 		c.weightx=0.5;
 		c.gridx=1;
 		c.gridy=2;
 		panel.add(butCellDivision,c);
 
-		butAddSis = new Button("Add Sister");
+		butAddSis = new JButton("Add Sister");
 		butAddSis.addActionListener(this);
 		c.weightx=0.5;
 		c.gridx=2;
 		c.gridy=2;
 		panel.add(butAddSis,c);
 
-		butDeleteCell = new Button("Delete Cell");
+		butDeleteCell = new JButton("Delete Cell");
 		butDeleteCell.addActionListener(this);
 		c.weightx=0.5;
 		c.gridx=3;
 		c.gridy=2;
 		panel.add(butDeleteCell,c);
 
-		butAddMom = new Button("Add Mother");
+		butAddMom = new JButton("Add Mother");
 		butAddMom.addActionListener(this);
 		c.weightx=0.5;
 		c.gridx=0;
 		c.gridy=3;
 		panel.add(butAddMom,c);
 
-		butContMode = new Button("Cont Mode");
+		butContMode = new JButton("Cont Mode");
 		butContMode.addActionListener(this);
 		c.weightx=0.5;
 		c.gridx=3;
 		c.gridy=3;
 		panel.add(butContMode,c);
 
-		butCellStart = new Button("Go to Cell Start");
+		butCellStart = new JButton("Go to Cell Start");
 		butCellStart.addActionListener(this);
 		c.weightx=0.5;
 		c.gridx=0;
 		c.gridy=4;
 		panel.add(butCellStart,c);
 
-		butCellEnd = new Button("Go to Cellbla End");
+		butCellEnd = new JButton("Go to Cellbla End");
 		butCellEnd.addActionListener(this);
 		c.weightx=0.5;
 		c.gridx=1;
 		c.gridy=4;
 		panel.add(butCellEnd,c);
 
-		butAddLoc = new Button("Add roi to cell");
+		butAddLoc = new JButton("Add roi to cell");		
 		butAddLoc.addActionListener(this);
 		c.weightx=0.5;
 		c.gridx=0;
 		c.gridy=5;
 		panel.add(butAddLoc,c);
 
-	 
+
 
 		menuBar = new JMenuBar();
 		menu = new JMenu("File");		
@@ -242,7 +243,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		menu.add(menuItemSaveStruct);
 		menuBar.add(menu);
 		imp.getCanvas().addMouseListener(this);
-		//imp.getCanvas().addKeyListener(this) ;
+		imp.getCanvas().addKeyListener(this) ;
 		ImagePlus.addImageListener(this);
 
 		frame.setJMenuBar(menuBar);
@@ -311,7 +312,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 			else{
 				Cell momCell=moms.iterator().next();
 				this.textMomId.setText(String.valueOf(momCell.getId()));
-				this.txtCellName.setText(momCell.getName());
+				this.txtMomName.setText(momCell.getName());
 			}	
 
 		}
@@ -359,6 +360,39 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 				this.updateCurCell(cell);				
 			}				
 		}
+		else if(e.getSource()==butCellDivision){
+			Roi roi = imp.getRoi();
+			if(roi==null || curCell==null){
+				IJ.showMessage("can't divide: either no current cell or no roi");
+				return;
+			}				
+			Cell mom=curCell;
+			Cell newCell=cellsStruct.addNewCell();
+			newCell.addMother(mom);
+			this.updateCurCell(newCell);			
+			this.addRoiToCell(imp.getRoi());			
+		}
+		
+		else if(e.getSource()==butAddMom){
+			if(curCell==null){
+				IJ.showMessage("cannot add mother: no current cell");
+				return;
+			}
+			GenericDialog gd=new GenericDialog("Add mother cell with id:");
+			gd.addNumericField("what is mother id?", -1, 4);
+			gd.showDialog();
+			int momid=(int)gd.getNextNumber();		
+			Cell mom=cellsStruct.getCell(momid);
+			if(mom==null){
+				IJ.showMessage("cannot add mother: no cell exist with the given id");
+				return;
+			}
+			curCell.addMother(mom);
+			this.setCellsGui();
+			IJ.showMessage("updated cell struct: "+cellsStruct.toString());
+		
+		}
+		
 		else if(e.getSource()==menuItemSaveStruct){
 			IJ.showMessage("actionPerformed", "menu butn save struct");
 		}
@@ -430,6 +464,10 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	 * @param roi
 	 */
 	public void addRoiToCell(Roi roi){
+		if(roi==null){
+			IJ.showMessage("no roi is found");
+			return;
+		}
 		ImageStack stack=imp.getStack();
 		int slice=imp.getCurrentSlice();
 		String filename=stack.getSliceLabel(slice);
@@ -507,24 +545,60 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	}
 
 	@Override
-	public void keyPressed(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-		
+	public void keyPressed(KeyEvent key) {
+
+
+
 	}
 
 	@Override
 	public void keyReleased(KeyEvent key) {
-//		if(key.getKeyChar()==){
-//			
-//		}
-		
+
+
 	}
 
 	@Override
-	public void keyTyped(KeyEvent arg0) {
-		
-		
+	public void keyTyped(KeyEvent key) {
+		//n means add current selection as roi for the current cell and go to the next slice 
+		if(key.getKeyChar()=='n'){
+			this.addRoiToCell(imp.getRoi());
+			boolean suc=nextSlice();
+			if(!suc){
+				drawFrame();
+			}
+		}
+		//a means add current selection as roi for the current cell and go to the next slice 
+		else if(key.getKeyChar()=='a'){
+			this.addRoiToCell(imp.getRoi());
+			drawFrame();
+		}		
 	}
+
+
+//	/**
+//	 * 
+//	 * @return Roi of the current cell in the previous slice, null if can't find this.
+//	 */
+//
+//	Roi getRoiOfPreviuosSlice(){
+//		if(curCell!=null){
+//			int curSlice=imp.getCurrentSlice();
+//			int prevFrame=this.stack2frameMap.get(curSlice-1);			
+//			Roi roi=curCell.getLocationInFrame(prevFrame);
+//			return roi;
+//		}
+//		return null;
+//	}
+
+private boolean nextSlice(){
+	boolean res=false;
+	int curSlice=imp.getCurrentSlice();
+	if(curSlice<imp.getImageStackSize()){
+		imp.setSlice(++curSlice);
+		res=true;
+	}
+	return res;
+}
 
 }
 //public void drawFrame(){

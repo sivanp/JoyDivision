@@ -63,7 +63,7 @@ public class Cells extends Hashtable<Integer, Cell> implements Serializable
 	 */
 	public Cell addNewCell()
 	{
-		Cell c = new Cell(lastId++,this);
+		Cell c = new Cell(++lastId,this);
 		this.put(c.getId(),c);
 		return c;
 	}
