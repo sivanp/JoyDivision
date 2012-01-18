@@ -35,7 +35,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	Cell curCell;
 	Set<Cell> monitorSet;
 	Cells cellsStruct;
-
+	
 
 	//GUI Stuff
 	Panel panel;
@@ -45,7 +45,8 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	JButton butAddSis;
 	JButton butDeleteCell;
 	JButton butAddMom;
-	JButton butContMode;
+	JButton butRemoveMom;
+	JToggleButton butContMode;
 	JButton butCellStart;
 	JButton butCellEnd;
 	JButton butAddLoc;
@@ -56,6 +57,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	JMenuBar menuBar;
 	JMenu menu;
 	JMenuItem menuItemSaveStruct;
+	
 
 	boolean mouseListening=false;
 
@@ -204,9 +206,17 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		c.gridx=0;
 		c.gridy=3;
 		panel.add(butAddMom,c);
+		
+		butRemoveMom = new JButton("Remove Mother");
+		butRemoveMom.addActionListener(this);
+		c.weightx=0.5;
+		c.gridx=0;
+		c.gridy=4;
+		panel.add(butRemoveMom,c);
 
-		butContMode = new JButton("Cont Mode");
+		butContMode = new JToggleButton("Cont Mode");
 		butContMode.addActionListener(this);
+//		butContMode.doClick();
 		c.weightx=0.5;
 		c.gridx=3;
 		c.gridy=3;
@@ -216,21 +226,21 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		butCellStart.addActionListener(this);
 		c.weightx=0.5;
 		c.gridx=0;
-		c.gridy=4;
+		c.gridy=5;
 		panel.add(butCellStart,c);
 
-		butCellEnd = new JButton("Go to Cellbla End");
+		butCellEnd = new JButton("Go to Cell End");
 		butCellEnd.addActionListener(this);
 		c.weightx=0.5;
 		c.gridx=1;
-		c.gridy=4;
+		c.gridy=5;
 		panel.add(butCellEnd,c);
 
 		butAddLoc = new JButton("Add roi to cell");		
 		butAddLoc.addActionListener(this);
 		c.weightx=0.5;
 		c.gridx=0;
-		c.gridy=5;
+		c.gridy=6;
 		panel.add(butAddLoc,c);
 
 
@@ -260,7 +270,8 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		this.generateStack2FrameMapping();
 		curSlice=1;
 		curCell=null;
-		monitorSet=new HashSet<Cell>();		
+		monitorSet=new HashSet<Cell>();
+		
 		return DOES_ALL;
 	}
 
@@ -360,6 +371,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 				this.updateCurCell(cell);				
 			}				
 		}
+		
 		else if(e.getSource()==butCellDivision){
 			Roi roi = imp.getRoi();
 			if(roi==null || curCell==null){
@@ -373,6 +385,14 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 			this.addRoiToCell(imp.getRoi());			
 		}
 		
+		else if(e.getSource()==butCellStart){
+			getToCellStart();
+		}
+		
+		else if(e.getSource()==butCellEnd){
+			getToCellEnd();
+		}
+
 		else if(e.getSource()==butAddMom){
 			if(curCell==null){
 				IJ.showMessage("cannot add mother: no current cell");
@@ -388,9 +408,48 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 				return;
 			}
 			curCell.addMother(mom);
-			this.setCellsGui();
-			IJ.showMessage("updated cell struct: "+cellsStruct.toString());
+			this.setCellsGui();			
+		}
+		else if(e.getSource()==butRemoveMom){
+			if(curCell==null){
+				IJ.showMessage("cannot add mother: no current cell");
+				return;
+			}
+			GenericDialog gd=new GenericDialog("Remove mother cell with id:");
+			gd.addNumericField("what is mother id?", -1, 4);
+			gd.showDialog();
+			int momid=(int)gd.getNextNumber();		
+			Cell mom=cellsStruct.getCell(momid);
+			if(mom==null){
+				IJ.showMessage("cannot remove mother: no cell exist with the given id");
+				return;
+			}
+			curCell.removeMother(mom);
+			this.setCellsGui();			
+		}
 		
+		else if(e.getSource()==butDeleteCell){
+			if(curCell==null){
+				IJ.showMessage("cannot remove: no current cell");
+				return;
+			}
+			cellsStruct.remove(curCell);
+			drawFrame();					
+		}
+		else if(e.getSource()==butAddSis){
+			IJ.showMessage("Not set yet go to mother....");
+		}
+		
+		else if(e.getSource()==butContMode){
+			if(butContMode.isSelected()){
+				Thread queryThread = new Thread() {
+				      public void run() {
+				    	  wandTrack();
+				      }
+				    };
+				    queryThread.start();
+			}
+			
 		}
 		
 		else if(e.getSource()==menuItemSaveStruct){
@@ -459,6 +518,51 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 
 	}
 
+	
+	private boolean getToCellStart(){
+		if(curCell==null){
+			return false;
+		}
+		Set<Integer> cellFrames =curCell.getFrames();
+		Iterator<Integer> fiter=cellFrames.iterator();
+		int minFrame=Integer.MAX_VALUE;
+		while(fiter.hasNext()){
+			int f=fiter.next();
+			if(f<minFrame){
+				minFrame=f;
+			}
+		}
+		int slice=getSliceOfFrame(minFrame);
+		if(slice==-1){
+			IJ.showMessage("Problem getting start frame for this cell");
+			return false;
+		}
+		imp.setSlice(slice);
+		return true;
+	}
+	
+	private boolean getToCellEnd(){
+		if(curCell==null){
+			return false;
+		}
+		Set<Integer> cellFrames =curCell.getFrames();
+		Iterator<Integer> fiter=cellFrames.iterator();
+		int maxFrame=Integer.MIN_VALUE;
+		while(fiter.hasNext()){
+			int f=fiter.next();
+			if(f>maxFrame){
+				maxFrame=f;
+			}
+		}
+		int slice=getSliceOfFrame(maxFrame);
+		
+		if(slice==-1){
+			IJ.showMessage("Problem getting start frame for this cell");
+			return false;
+		}
+		imp.setSlice(slice);
+		return true;
+	}
 	/**
 	 * Add the given ROI to the current cell in the current frame- according to the UI
 	 * @param roi
@@ -546,10 +650,20 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 
 	@Override
 	public void keyPressed(KeyEvent key) {
-
-
-
 	}
+	private int getSliceOfFrame(int frame){
+		Iterator<Integer> slicesIter=this.stack2frameMap.keySet().iterator();		
+		boolean found=false;
+		while(slicesIter.hasNext() && !found){
+			int slice=slicesIter.next();
+			if(stack2frameMap.get(slice).intValue()==frame){
+				return slice;				
+			}
+		}
+		return -1;
+	}
+
+
 
 	@Override
 	public void keyReleased(KeyEvent key) {
@@ -574,6 +688,54 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		}		
 	}
 
+	void wandTrack(){
+		//TODO - how to make it on a monitor list
+		Roi roi= imp.getRoi();
+		if(roi==null){
+			return;
+		}
+		this.addRoiToCell(roi);
+		if(curCell==null){
+			IJ.showMessage("cannot track: no current cell");
+			return;
+		}
+		//TODO - check about the offScreen if needed here...
+		int x =(int) roi.getBounds().getCenterX();
+		int y =(int) roi.getBounds().getCenterY();
+		//TODO need to calculate nearest mask.... if want to mark it
+		//gotNext=true;
+		boolean gotNext=nextSlice();	
+		while(butContMode.isSelected()){
+					
+			if(!gotNext){				
+				butContMode.setSelected(false);
+				return;
+			}
+			double tolerance=0;
+			int dots=IJ.doWand(x, y, tolerance,  "8-connected" ); //looks like this returns the number of points
+//			IJ.showMessage("tracking wand dots: "+dots);
+			if(dots==0){
+				butContMode.setSelected(false);
+				return;
+			}
+			roi= imp.getRoi();
+			this.addRoiToCell(roi);
+			x =(int) roi.getBounds().getCenterX();
+			y =(int) roi.getBounds().getCenterY();
+			//  
+			//do what you want to do before sleeping
+			  try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}//sleep for 1000 ms
+			 
+			gotNext=nextSlice();
+			
+		}
+		
+	}
 
 //	/**
 //	 * 
