@@ -4,6 +4,7 @@ import ij.ImagePlus;
 import javax.swing.JFrame;
 //import ij.plugin.frame.RoiManager;
 import java.awt.event.*;
+
 import ij.gui.*;
 import java.awt.*;
 import java.io.FileInputStream;
@@ -15,7 +16,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.SortedMap;
-import java.util.StringTokenizer;
 import java.util.TreeMap;
 
 import ij.plugin.filter.*;
@@ -24,7 +24,7 @@ import ij.process.ImageProcessor;
 
 import javax.swing.*;
 
-public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionListener, ItemListener, ImageListener  {
+public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionListener, ItemListener, ImageListener, KeyListener  {
 	ImagePlus imp;	
 	ImagePlus origImp;
 	SortedMap<Integer, Integer> stack2frameMap;
@@ -64,37 +64,41 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		createGui();
 
 
-		Cell cell1=cellsStruct.addNewCell();		
-		try {			
-			Roi roi1=new Roi(100,100,20,20);
-			cell1.addLocation(1003, roi1);
-			cell1.addLocation(1002, roi1);
-			cell1.addLocation(1001, roi1);
-			Cell cell2=cellsStruct.addNewCell();
-			cell2.addMother(cell1);
-			Cell cell3=cellsStruct.addNewCell();
-			cell2.addChild(cell3);
-			//cell1.addMother(cell3);
-			//cell3.addDaughter(cell1);			
-			IJ.showMessage("before dissociating cell2 and cell1: "+cellsStruct.toString());
-			cellsStruct.dissociateMotherDaughter(cell2,cell1);
-			IJ.showMessage("after dissociating cell2 and cell1: "+cellsStruct.toString());
-			//			cellsStruct.dissociateCellMother(2, 1);
-			//			//IJ.showMessage("after dissociating 1,2: "+cellsStruct.toString());
-			//			cellsStruct.addNQBCell(cell2, cell1.getId(), 1);
-			//			//IJ.showMessage("after adding 1,2: "+cellsStruct.toString());
-			//			cellsStruct.deleteCell(2);
-			//			//IJ.showMessage("after deleting 2: "+cellsStruct.toString());
-			//			cellsStruct.addNQBCell(cell3, cell1.getId(), 1);
-			//			//IJ.showMessage("after adding 1,3: "+cellsStruct.toString());
-			//			cellsStruct.dissociateCellMother(3, 1);
-			//		//	IJ.showMessage("after dissociating 1,3: "+cellsStruct.toString());
-			//			drawFrame();
-			//			this.drawNonVirtualFrame();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}		
+//		Cell cell1=cellsStruct.addNewCell();		
+//		try {			
+//			Roi roi1=new Roi(100,100,20,20);
+//			cell1.addLocation(1003, roi1);
+//			cell1.addLocation(1002, roi1);
+//			cell1.addLocation(1001, roi1);
+//			Cell cell2=cellsStruct.addNewCell();
+//			cell2.addMother(cell1);
+//			Cell cell3=cellsStruct.addNewCell();
+//			cell2.addDaughter(cell3);
+//			cell1.addMother(cell3);
+//			cell3.addDaughter(cell1);			
+//			IJ.showMessage("before dissociating cell2 and cell1: "+cellsStruct.toString());
+//			cellsStruct.dissociateMotherDaughter(cell2,cell1);
+//			IJ.showMessage("after dissociating cell2 and cell1: "+cellsStruct.toString());			
+//			cellsStruct.remove(cell2);
+//			IJ.showMessage("after deleting 2: "+cellsStruct.toString());
+//			cell3.addMother(cell2);
+//			cell3.addMother(cell1);
+//			cellsStruct.dissociateMotherDaughter(cell3, cell1);
+//			IJ.showMessage("after dissociating cell3 to cell1 wrong: "+cellsStruct.toString());
+//			cellsStruct.dissociateMotherDaughter(cell1, cell3);
+//			IJ.showMessage("after dissociating cell3 to cell1 right: "+cellsStruct.toString());
+//			cell1.addDaughter(cell3);
+//			IJ.showMessage("after adding cell3 to cell1 right: "+cellsStruct.toString());
+//			cellsStruct.remove(cell1);
+//			IJ.showMessage("after removing cell1: "+cellsStruct.toString());
+//			cellsStruct.remove(cell3);
+//			IJ.showMessage("after removing cell3: "+cellsStruct.toString());
+//
+//
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}		
 //		IJ.showMessage("before save: "+cellsStruct.toString());
 //		String filename="C:/Users/sivan-nqb/Desktop/cellStruct";
 //		saveCellsStruct(filename);
@@ -228,6 +232,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		c.gridy=5;
 		panel.add(butAddLoc,c);
 
+	 
 
 		menuBar = new JMenuBar();
 		menu = new JMenu("File");		
@@ -237,7 +242,8 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		menu.add(menuItemSaveStruct);
 		menuBar.add(menu);
 		imp.getCanvas().addMouseListener(this);
-		imp.addImageListener(this);
+		//imp.getCanvas().addKeyListener(this) ;
+		ImagePlus.addImageListener(this);
 
 		frame.setJMenuBar(menuBar);
 		frame.getContentPane().add(panel,BorderLayout.CENTER);
@@ -265,10 +271,9 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 			int y=m.getY();
 			curX=canvas.offScreenX(x);
 			curY=canvas.offScreenY(y);
-			//			IJ.showMessage("mouse released", "mouse released curX : "+curX+" y: "+curY);
+			updateCellInCoordiantes(curX,curY);
+			mouseListening=false;
 		}
-		updateCellInCoordiantes(curX,curY);
-		mouseListening=false;	
 	}
 
 	/**
@@ -378,22 +383,21 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	}
 
 	public void drawFrame(){
-		//TODO deal with when the stack is not virtual
-		int stackFrame=imp.getCurrentSlice();		
-		ImageStack imstack=imp.getStack();
-		//PathTokens pt=new PathTokens(imstack.getSliceLabel(stackFrame));
+		//TODO deal with when the stack is virtual
+		int stackFrame=imp.getCurrentSlice();	
 		Overlay ov = new Overlay();
 
 		//look for all Rois for this frame
 		Integer frame = stack2frameMap.get(stackFrame);
 		Set<Cell> frameCells = cellsStruct.getCellsInFrame(frame);
-		//		List<NQBCell> frameCells= cellsStruct.getCellsInFrame(pt.site, frame);
-		Iterator<Cell> iter=frameCells.iterator();
-		while(iter.hasNext()){
-			Cell curCell=iter.next();			
-			Roi mroi=(Roi) curCell.getLocationInFrame(frame).clone();
-			mroi.setStrokeColor(Color.GREEN);
-			ov.add(mroi);
+		if(frameCells!=null){
+			Iterator<Cell> iter=frameCells.iterator();
+			while(iter.hasNext()){
+				Cell curCell=iter.next();			
+				Roi mroi=(Roi) curCell.getLocationInFrame(frame).clone();
+				mroi.setStrokeColor(Color.GREEN);
+				ov.add(mroi);
+			}
 		}
 		imp.setOverlay(ov);
 		imp.updateAndDraw();
@@ -500,6 +504,26 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	private void updateCurCell(Cell newCell){
 		curCell=newCell;
 		setCellsGui();
+	}
+
+	@Override
+	public void keyPressed(KeyEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyReleased(KeyEvent key) {
+//		if(key.getKeyChar()==){
+//			
+//		}
+		
+	}
+
+	@Override
+	public void keyTyped(KeyEvent arg0) {
+		
+		
 	}
 
 }

@@ -77,15 +77,6 @@ public class Cell implements Serializable
 		return parentCells.getCl().getFrames(this);
 	}
 
-	public void addParent(Cell parent)
-	{
-		parentCells.getCp().put(parent,this);
-	}
-
-	public void addChild(Cell child)
-	{
-		parentCells.getCp().put( this, child);
-	}
 
 	public Set<Cell> getDaughters()
 	{
@@ -99,8 +90,13 @@ public class Cell implements Serializable
 
 	public void addMother(Cell mother)
 	{
+		if(!parentCells.contains(mother) || !parentCells.contains(this)){
+			IJ.showMessage("cannot add: this or mother does not exist in structure ");
+			return;
+		}
+			
 		if(this.equals(mother)){
-			IJ.showMessage("mother is the same as this cell- cannot add");
+			IJ.showMessage("cannot add: mother is the same as this cell- cannot add");
 			return;
 		}
 		//no circles are allowed- mother cannot be one of this cell descendants
@@ -146,6 +142,10 @@ public class Cell implements Serializable
 
 	public void addDaughter(Cell daughter)
 	{
+		if(!parentCells.contains(daughter) || !parentCells.contains(this)){
+			IJ.showMessage("cannot add: this or daughter does not exist in structure ");
+			return;
+		}
 		if(this.equals(daughter)){
 			IJ.showMessage("daughter is the same as this cell- cannot add");
 		}
@@ -170,7 +170,7 @@ public class Cell implements Serializable
 
 	public void addLocation(int frame , Roi roi) 
 	{
-		parentCells.getCl().put(this, frame, roi);
+		parentCells.getCl().addLocationToCell(this, frame, roi);
 	}
 
 	public Roi getLocationInFrame(int frame){
