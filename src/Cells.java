@@ -50,9 +50,10 @@ public class Cells extends Hashtable<Integer, Cell> implements Serializable
 
 	@Override
 	public synchronized Cell remove(Object cell) {
-		cp.removeCell((Cell)cell);
-		cl.remove(cell);
-		return super.remove(cell);
+		Cell c=(Cell)cell;
+		cp.removeCell(c);
+		cl.removeCell(c);
+		return super.remove(c.getId());
 	}
 
 
@@ -68,7 +69,11 @@ public class Cells extends Hashtable<Integer, Cell> implements Serializable
 	}
 	
 	public Set<Cell> getCellsInFrame(int frame){
-		return cl.getCellsByFrame(frame).keySet();
+		Map<Cell,Roi> cells=cl.getCellsByFrame(frame);
+		if(cells==null){
+			return null;
+		}
+		return cells.keySet();
 	}
 	
 	/**

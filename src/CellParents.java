@@ -1,4 +1,5 @@
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -6,7 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 
-public class CellParents extends HashMap<Cell, HashSet<Cell>>
+public class CellParents implements Serializable
 {
 	/**
 	 * 
@@ -15,34 +16,35 @@ public class CellParents extends HashMap<Cell, HashSet<Cell>>
 
 	//private Map<Integer, HashSet<Integer>> byParent;
 	private Map<Cell, HashSet<Cell>> byChild;
-	
+	private Map<Cell, HashSet<Cell>> byParent;
 	public CellParents()
 	{
-//		byParent = new HashMap<Integer, HashSet<Integer>> ();
+		byParent = new HashMap<Cell, HashSet<Cell>> ();
 		byChild = new HashMap<Cell, HashSet<Cell>> ();
 	}
 
 	public void clear() 
 	{
-		super.clear();
+		byParent.clear();
 		byChild.clear();
 		
 	}
 
 	
-	@Override
-	public boolean containsValue(Object value) 
+	
+	public boolean containsParent(Cell cell) 
+	{	
+		return byParent.containsKey(cell);
+		
+	}
+	
+	public boolean containsChild(Cell cell) 
 	{		
-		return byChild.containsKey(value);
+		return byChild.containsKey(cell);
 	}
 	
 		
-	public Set<Cell> childKeySet() 
-	{
-		return byChild.keySet();
-	}
 	
-
 	
 	/**
 	 * 
@@ -58,61 +60,16 @@ public class CellParents extends HashMap<Cell, HashSet<Cell>>
 		}
 		parents.add(mom);
 		byChild.put(daughter, parents);
-		HashSet<Cell> childs=this.get(mom);
+		HashSet<Cell> childs=byParent.get(mom);
 		if(childs ==null){
 			childs=new HashSet<Cell>();
 		}
 		childs.add(daughter);
-		this.put(mom,childs);
-		return childs;
-		
-		
+		byParent.put(mom,childs);
+		return childs;		
 	}
+
 	
-	@Override
-	public HashSet<Cell> put(Cell key, HashSet<Cell> value) 
-	{
-		Iterator<Cell> viter=value.iterator();
-		while(viter.hasNext()){
-			Cell child=viter.next();
-			HashSet<Cell> parents=byChild.get(child);
-			if(parents ==null){
-				parents=new HashSet<Cell>();
-			}
-			parents.add(key);
-			byChild.put(child, parents);
-		}
-		
-		
-		return super.put(key, value);
-	}
-
-	@Override
-	public void putAll(Map<? extends Cell, ? extends HashSet<Cell>> m) 
-	{
-		Set<? extends Cell> parents=m.keySet();
-		Iterator<? extends Cell> piter=parents.iterator();
-		while(piter.hasNext())
-		{
-			Cell p=piter.next();
-			HashSet<Cell> childs = this.get(p);
-			this.put(p, childs);
-		}
-		
-	}
-
-	@Override
-	public HashSet<Cell> remove(Object key) {
-		//remove this parent key from all cells
-		HashSet<Cell> value=this.get(key);
-		Iterator<Cell> viter=value.iterator();
-		while(viter.hasNext()){
-			Cell child=viter.next();
-			HashSet<Cell> parents=byChild.get(child);
-			parents.remove(key);
-		}
-		return super.remove(key);
-	}
 
 //	public HashSet<Cell> removeMother(Cell mother) {
 //		return remove(mother);
@@ -135,12 +92,30 @@ public class CellParents extends HashMap<Cell, HashSet<Cell>>
 	}
 	
 	public Set<Cell> getByParent(Cell parent){
-		return this.get(parent);
+		return byParent.get(parent);
 	}
 	
 	public void removeCell(Cell cell)
 	{
-		this.remove(cell);
+		//go over all children and erase this cell from their byChild mapping
+		Set<Cell> daughters=byParent.get(cell);
+		if(daughters!=null){
+			Iterator<Cell> iter=daughters.iterator();
+			while(iter.hasNext()){
+				Cell daughter = iter.next();
+				byChild.get(daughter).remove(cell);
+			}
+		}
+		//go over all parents and erase this cell from their mothers mapping
+		Set<Cell> moms=byChild.get(cell);
+		if(moms!=null){
+			Iterator<Cell> iter2=moms.iterator();
+			while(iter2.hasNext()){
+				Cell mom = iter2.next();
+				byParent.get(mom).remove(cell);
+			}
+		}		
+		byParent.remove(cell);		
 		byChild.remove(cell);
 	}
 	
@@ -151,10 +126,10 @@ public class CellParents extends HashMap<Cell, HashSet<Cell>>
 			moms.remove(mom);
 			byChild.put(daughter, moms);
 		}		
-		HashSet<Cell> kids=this.get(mom);
+		HashSet<Cell> kids=byParent.get(mom);
 		if(kids!=null){
 			res=kids.remove(daughter);
-			this.put(mom, kids);
+			byParent.put(mom, kids);
 		}			
 		return res;
 	}
