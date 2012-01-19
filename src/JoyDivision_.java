@@ -6,6 +6,9 @@ import javax.swing.JFrame;
 import java.awt.event.*;
 
 import ij.gui.*;
+import ij.io.OpenDialog;
+import ij.io.SaveDialog;
+
 import java.awt.*;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -38,7 +41,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	
 
 	//GUI Stuff
-	Panel panel;
+	JPanel panel;
 	JFrame frame;
 	JButton butGetCell;
 	JButton butCellDivision;
@@ -50,13 +53,14 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	JButton butCellStart;
 	JButton butCellEnd;
 	JButton butAddLoc;
-	TextField textCellId;
-	TextField txtCellName;
-	TextField textMomId;
-	TextField txtMomName;
+	JTextField textCellId;
+	JTextField txtCellName;
+	JTextField textMomId;
+	JTextField txtMomName;
 	JMenuBar menuBar;
 	JMenu menu;
 	JMenuItem menuItemSaveStruct;
+	JMenuItem menuItemLoadStruct;
 	
 
 	boolean mouseListening=false;
@@ -66,10 +70,17 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		createGui();
 
 
-		//		Cell cell1=cellsStruct.addNewCell();		
-		//		try {			
-		//			Roi roi1=new Roi(100,100,20,20);
-		//			cell1.addLocation(1003, roi1);
+				Cell cell1=cellsStruct.addNewCell();		
+				try {			
+//					Roi roi1=new Roi(100,100,20,20);
+//					IJ.showMessage("image of ROI is:"+roi1.getImage());
+//					roi1=imp.getRoi();
+//					IJ.showMessage("image of ROI is:"+roi1.getImage());
+//					Polygon poly=roi1.getPolygon();
+//					roi1=new PolygonRoi(poly,Roi.FREELINE);
+//					IJ.showMessage("image of ROI is:"+roi1.getImage());
+//					roi1.setImage(null);
+//					cell1.addLocation(1003, roi1);
 		//			cell1.addLocation(1002, roi1);
 		//			cell1.addLocation(1001, roi1);
 		//			Cell cell2=cellsStruct.addNewCell();
@@ -97,15 +108,15 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		//			IJ.showMessage("after removing cell3: "+cellsStruct.toString());
 		//
 		//
-		//		} catch (Exception e) {
-		//			// TODO Auto-generated catch block
-		//			e.printStackTrace();
-		//		}		
-		//		IJ.showMessage("before save: "+cellsStruct.toString());
-		//		String filename="C:/Users/sivan-nqb/Desktop/cellStruct";
-		//		saveCellsStruct(filename);
-		//		Cells cellsStructLoaded = loadCellsStruct(filename);
-		//		IJ.showMessage("after save: "+cellsStructLoaded.toString());
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}		
+//				IJ.showMessage("before save: "+cellsStruct.toString());
+//				String filename="C:/Users/sivan-nqb/Desktop/cellStruct";
+//				saveCellsStruct(filename);
+//				Cells cellsStructLoaded = loadCellsStruct(filename);
+//				IJ.showMessage("after save: "+cellsStructLoaded.toString());
 		//
 		//
 		//		
@@ -121,17 +132,33 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	private void createGui() {
 		IJ.run("Misc...", "divide=Infinity require run");
 		frame = new JFrame("testing!");
-		panel = new Panel(new GridBagLayout());
+		panel = new JPanel(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();	
 		panel.setBackground(SystemColor.control);
 		c.fill = GridBagConstraints.HORIZONTAL;
 
+		menuBar = new JMenuBar();
+		menu = new JMenu("File");		
+		menuBar.add(menu);
+		
+		menuItemSaveStruct = new JMenuItem("save cell structure");
+		menuItemSaveStruct.addActionListener(this);
+		menu.add(menuItemSaveStruct);
+		
+		menuItemLoadStruct=new JMenuItem("Load cell structure");
+		menuItemLoadStruct.addActionListener(this);
+		menu.add(menuItemLoadStruct);		
+		
+		menuBar.add(menu);
+		//menuBar.s
+		
+		
 		c.weightx=0.5;
 		c.gridx=0;
 		c.gridy=0;
-		panel.add(new Label("cell id:"),c);
+		panel.add(new JLabel("cell id:"),c);
 
-		textCellId=new TextField("");
+		textCellId=new JTextField("");
 		textCellId.addActionListener(this);
 		c.weightx=0.5;
 		c.gridx=1;
@@ -141,9 +168,9 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		c.weightx=0.5;
 		c.gridx=2;
 		c.gridy=0;
-		panel.add(new Label("cell name:"),c);
+		panel.add(new JLabel("cell name:"),c);
 
-		txtCellName=new TextField("");		
+		txtCellName=new JTextField("");		
 		c.weightx=0.5;
 		c.gridx=3;
 		c.gridy=0;
@@ -152,9 +179,9 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		c.weightx=0.5;
 		c.gridx=0;
 		c.gridy=1;
-		panel.add(new Label("mom id:"),c);
+		panel.add(new JLabel("mom id:"),c);
 
-		textMomId=new TextField("");	
+		textMomId=new JTextField("");	
 		c.weightx=0.5;
 		c.gridx=1;
 		c.gridy=1;		
@@ -163,9 +190,9 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		c.weightx=0.5;
 		c.gridx=2;
 		c.gridy=1; 
-		panel.add(new Label("mom name:"),c);
+		panel.add(new JLabel("mom name:"),c);
 
-		txtMomName=new TextField("");		
+		txtMomName=new JTextField("");		
 		c.weightx=0.5;
 		c.gridx=3;
 		c.gridy=1;
@@ -245,13 +272,8 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 
 
 
-		menuBar = new JMenuBar();
-		menu = new JMenu("File");		
-		menuBar.add(menu);
-		menuItemSaveStruct = new JMenuItem("save cell structure");
-		menuItemSaveStruct.addActionListener(this);
-		menu.add(menuItemSaveStruct);
-		menuBar.add(menu);
+		
+		
 		imp.getCanvas().addMouseListener(this);
 		imp.getCanvas().addKeyListener(this) ;
 		ImagePlus.addImageListener(this);
@@ -434,6 +456,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 				return;
 			}
 			cellsStruct.remove(curCell);
+			this.updateCurCell(null);
 			drawFrame();					
 		}
 		else if(e.getSource()==butAddSis){
@@ -448,12 +471,18 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 				      }
 				    };
 				    queryThread.start();
+				    drawFrame();
 			}
 			
 		}
 		
 		else if(e.getSource()==menuItemSaveStruct){
-			IJ.showMessage("actionPerformed", "menu butn save struct");
+			this.saveCellStructure();	
+			 
+		}
+		else if(e.getSource()==menuItemLoadStruct){
+			cellsStruct=this.loadCellsStruct();
+			drawFrame();
 		}
 	}
 	public void itemStateChanged(ItemEvent e){
@@ -501,7 +530,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	 * Saves the cells in the cellsStruct 
 	 * @param filename the path of the file save the cellsStruct in
 	 */
-	public void saveCellsStruct(String filename){
+	protected void saveCellsStruct(String filename){		
 		FileOutputStream fos = null;
 		ObjectOutputStream out = null;
 		try{
@@ -516,6 +545,61 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 			ex.printStackTrace();
 		}
 
+	}
+	
+	public void saveCellStructure(){
+		 SaveDialog sd = new SaveDialog("Save cell structure", "cell Struct", "");
+		 String name = sd.getFileName();
+        if (name==null){
+            return;  
+        }
+        String directory = sd.getDirectory();         
+        String path = directory+name;
+        this.saveCellsStruct(path);
+	}
+
+	
+	public Cells loadCellsStruct(){
+		OpenDialog od = new OpenDialog("Choose a cells structure file (note this will erase current structure)", null);  
+        String dir = od.getDirectory();  
+        if (null == dir){ 
+        	return null; // dialog was canceled  
+        }
+        dir = dir.replace('\\', '/'); // Windows safe  
+        if (!dir.endsWith("/")){
+        	dir += "/";  
+        }
+        String path=dir + od.getFileName();
+        return loadCellsStruct(path);
+	}
+	
+	/**
+	 * Load and return the SiteNqbCellMap in the given path into the cellsStruct object 
+	 * @param filename the path of the file from which the cellsStruct is written to
+	 * @return the SiteNqbCellMap saved in the file with the given filename
+	 */
+	protected Cells loadCellsStruct(String filename){
+		FileInputStream fis = null;
+		ObjectInputStream in = null;
+		try{
+			fis = new FileInputStream(filename);
+			in = new ObjectInputStream(fis);
+			Cells cells=(Cells)in.readObject();
+			in.close();
+			return cells;
+		}
+		catch(IOException ex)
+		{
+			IJ.showMessage("IOException","io: "+ex);
+			ex.printStackTrace();
+			return null;
+		}
+		catch(ClassNotFoundException ex)    			
+		{
+			IJ.showMessage("Exception","classNotFound");
+			ex.printStackTrace();
+			return null;
+		}
 	}
 
 	
@@ -594,35 +678,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 
 	}
 
-	/**
-	 * Load and return the SiteNqbCellMap in the given path into the cellsStruct object 
-	 * @param filename the path of the file from which the cellsStruct is written to
-	 * @return the SiteNqbCellMap saved in the file with the given filename
-	 */
-	public Cells loadCellsStruct(String filename){
-		FileInputStream fis = null;
-		ObjectInputStream in = null;
-		try{
-			fis = new FileInputStream(filename);
-			in = new ObjectInputStream(fis);
-			Cells cells=(Cells)in.readObject();
-			in.close();
-			return cells;
-		}
-		catch(IOException ex)
-		{
-			IJ.showMessage("IOException","io: "+ex);
-			ex.printStackTrace();
-			return null;
-		}
-		catch(ClassNotFoundException ex)    			
-		{
-			IJ.showMessage("Exception","classNotFound");
-			ex.printStackTrace();
-			return null;
-		}
-	}
-
+	
 	@Override
 	public void imageOpened(ImagePlus imp) {
 		// TODO Auto-generated method stub
@@ -707,7 +763,8 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		boolean gotNext=nextSlice();	
 		while(butContMode.isSelected()){
 					
-			if(!gotNext){				
+			if(!gotNext){	
+				 drawFrame();
 				butContMode.setSelected(false);
 				return;
 			}
@@ -752,6 +809,9 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 //		return null;
 //	}
 
+	
+	
+	
 private boolean nextSlice(){
 	boolean res=false;
 	int curSlice=imp.getCurrentSlice();

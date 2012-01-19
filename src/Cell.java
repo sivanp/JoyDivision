@@ -1,6 +1,8 @@
 import ij.IJ;
+import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 
+import java.awt.Polygon;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -170,6 +172,9 @@ public class Cell implements Serializable
 
 	public void addLocation(int frame , Roi roi) 
 	{
+		//converting the ROI to polygon ROI that will not hold imagePlus that screws up serialization...
+		Polygon poly=roi.getPolygon();
+		roi=new PolygonRoi(poly,Roi.FREEROI);
 		//TODO should we conduct checks such that a mother cell cannot continue in frames following daughters birth?
 		parentCells.getCl().addLocationToCell(this, frame, roi);
 	}

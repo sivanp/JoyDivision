@@ -1,3 +1,4 @@
+import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 
 import java.io.Serializable;
@@ -69,7 +70,7 @@ public class Cells extends Hashtable<Integer, Cell> implements Serializable
 	}
 	
 	public Set<Cell> getCellsInFrame(int frame){
-		Map<Cell,Roi> cells=cl.getCellsByFrame(frame);
+		Map<Cell,PolygonRoi> cells=cl.getCellsByFrame(frame);
 		if(cells==null){
 			return null;
 		}
@@ -85,7 +86,7 @@ public class Cells extends Hashtable<Integer, Cell> implements Serializable
 	 */
 	public Set<Cell> getCellsContaining(int frame, int x, int y){
 		Set<Cell> resCells= new HashSet<Cell>();
-		Map<Cell, Roi> cellLocs=cl.getCellsByFrame(frame);
+		Map<Cell, PolygonRoi> cellLocs=cl.getCellsByFrame(frame);
 		Iterator<Cell> citer=cellLocs.keySet().iterator();
 		while(citer.hasNext()){
 			Cell c=citer.next();

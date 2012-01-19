@@ -1,9 +1,12 @@
 
+import java.awt.Polygon;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+
+import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import java.util.HashSet;
 
@@ -11,10 +14,10 @@ public class CellsLocations implements Serializable {
 	
 	private static final long serialVersionUID = 3641410585003171843L;
 	Map<Integer,Set<Cell>> byFrame;
-	Map<Cell, Map<Integer,Roi>> byCell;
+	Map<Cell, Map<Integer,PolygonRoi>> byCell;
 	
 	public CellsLocations(){
-		byCell= new HashMap<Cell, Map<Integer,Roi>>();
+		byCell= new HashMap<Cell, Map<Integer,PolygonRoi>>();
 		byFrame=new HashMap<Integer,Set<Cell>>();
 	}
 	
@@ -24,7 +27,9 @@ public class CellsLocations implements Serializable {
 		
 	}
 
-	public Map<Integer,Roi> addLocationToCell(Cell cell, Integer frame, Roi roi){
+	public Map<Integer,PolygonRoi> addLocationToCell(Cell cell, Integer frame, Roi roi){
+		Polygon poly=roi.getPolygon();
+		PolygonRoi proi=new PolygonRoi(poly,Roi.FREEROI);
 		Set<Cell> cells=byFrame.get(frame);
 		if(cells ==null){
 			cells=new HashSet<Cell>();
@@ -32,17 +37,17 @@ public class CellsLocations implements Serializable {
 		cells.add(cell);
 		byFrame.put(frame, cells);
 		
-		Map<Integer, Roi> locs=byCell.get(cell);
+		Map<Integer, PolygonRoi> locs=byCell.get(cell);
 		if(locs==null){
-			locs=new HashMap<Integer,Roi>();
+			locs=new HashMap<Integer,PolygonRoi>();
 		}
-		locs.put(frame, roi);
+		locs.put(frame, proi);
 		return this.put(cell, locs);
 		
 	}
 	
 	
-	public Map<Integer, Roi> put(Cell cell, Map<Integer, Roi> value) 
+	public Map<Integer, PolygonRoi> put(Cell cell, Map<Integer, PolygonRoi> value) 
 	{
 		Set<Integer> frames=value.keySet();
 		Iterator<Integer> fiter=frames.iterator();
@@ -60,8 +65,8 @@ public class CellsLocations implements Serializable {
 	}
 	
 	
-	public Map<Integer, Roi> removeCell(Cell cell) {
-		Map<Integer,Roi> locs=byCell.get(cell);
+	public Map<Integer, PolygonRoi> removeCell(Cell cell) {
+		Map<Integer,PolygonRoi> locs=byCell.get(cell);
 		if(locs==null){
 			return null;
 		}
@@ -76,8 +81,8 @@ public class CellsLocations implements Serializable {
 		return byCell.remove(cell);
 	}
 	
-	public Map<Cell,Roi> getCellsByFrame(Integer frame){
-		Map<Cell, Roi> locs=new HashMap<Cell,Roi>();
+	public Map<Cell,PolygonRoi> getCellsByFrame(Integer frame){
+		Map<Cell, PolygonRoi> locs=new HashMap<Cell,PolygonRoi>();
 		Set<Cell> cells=byFrame.get(frame);
 		if(cells==null){
 			return null;
@@ -85,7 +90,7 @@ public class CellsLocations implements Serializable {
 		Iterator<Cell> citer = cells.iterator();
 		while(citer.hasNext()){
 			Cell c=citer.next();
-			Roi roi=byCell.get(c).get(frame);
+			PolygonRoi roi=byCell.get(c).get(frame);
 			locs.put(c,roi); 
 		}
 		return locs;
@@ -95,14 +100,14 @@ public class CellsLocations implements Serializable {
 	 * 
 	 * @param cell
 	 * @param frame
-	 * @return Roi associated with the given cell in the given frame
+	 * @return PolygonRoi associated with the given cell in the given frame
 	 */
-	public Roi getCellLocationInFrame(Cell cell, int frame){
-		Map<Cell, Roi> cellsInFrame=getCellsByFrame(frame);
+	public PolygonRoi getCellLocationInFrame(Cell cell, int frame){
+		Map<Cell, PolygonRoi> cellsInFrame=getCellsByFrame(frame);
 		return cellsInFrame.get(cell);
 	}
 	public Set<Integer> getFrames(Cell cell) {
-		Map<Integer,Roi> locs=byCell.get(cell);
+		Map<Integer,PolygonRoi> locs=byCell.get(cell);
 		if(locs==null){
 			return null;
 		}
