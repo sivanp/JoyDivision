@@ -49,7 +49,10 @@ public class MTrack3_ implements PlugInFilter, Measurements  {
    static boolean skipDialogue = false;
    private static String resultsFileName = null;
 
-	public class Particle {
+//JoyDivision 
+   Cells cells ;
+   
+   public class Particle {
 		float	x;
 		float	y;
 		float   velX = 0.0f;
@@ -317,7 +320,8 @@ public class MTrack3_ implements PlugInFilter, Measurements  {
 		} else {
 			positionTable.show("Particle positions");
 		}
-
+	
+		
 		// Now do the fancy stuff when requested:
 
 		// makes a new stack with objects labeled with track nr
