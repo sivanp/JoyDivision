@@ -232,4 +232,12 @@ public class Cell implements Serializable
 		}
 	}
 
+
+	
+	 boolean deleteLocation(int frame) {
+		 boolean res=false;
+		res=parentCells.removeCellLocation(this, frame);
+		return res;
+	}
+
 }
