@@ -46,11 +46,12 @@ public class OfTrack_ extends  MTrack3_
 					Cell childCell = cellsStruct.addNewCell();
 					for(Particle aParticle : trackParticles)
 					{
-						int frame= aParticle.z; 
-						imp.setSlice(frame);
+						int slice= aParticle.z; 
+						PathTokens pt=new PathTokens(imp.getStack(),slice);
+						imp.setSlice(slice);
 						IJ.doWand((int)aParticle.x, (int)aParticle.y);
 						Roi roi = imp.getRoi();
-						childCell.addLocation(frame, roi);
+						childCell.addLocation(pt.getFrame(), roi);
 						
 						positionTable.incrementCounter();
 						aParticle.displayTrackNr = i+1;
