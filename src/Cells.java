@@ -116,6 +116,27 @@ public class Cells extends Hashtable<Integer, Cell> implements Serializable
 	public void dissociateMotherDaughter(Cell mom, Cell daughter) {
 		cp.removeMomDaughter(mom, daughter);		
 	}
+	
+	/**
+	 * Removes the location of the given cell from the given frame
+	 * @param cell
+	 * @param frame
+	 */
+	public boolean removeCellLocation(Cell cell, int frame) {
+		boolean res=cl.removeCellLocation(cell, frame);
+		Set<Integer> cellFrames=cl.getFrames(cell);
+		//if all such instances are remove remove the cell from the structure
+		if(cellFrames==null || cellFrames.isEmpty()){
+			this.remove(cell);
+		}
+		return res;
+	}
+	public void swapCellLocations(Cell cell1, Cell cell2, Integer frame) {
+		cl.swapCellLocations(cell1, cell2,frame);
+		
+	}
+	
+	
 
 
 
