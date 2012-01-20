@@ -9,6 +9,7 @@ import ij.io.OpenDialog;
 import ij.io.SaveDialog;
 
 import java.awt.*;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -18,7 +19,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.SortedMap;
+import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import ij.plugin.filter.*;
 import ij.*;
@@ -30,6 +33,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	ImagePlus imp;	
 	ImagePlus origImp;
 	SortedMap<Integer, Integer> stack2frameMap;
+	SortedMap<Integer, Integer> frame2timeMap;
 	ImagePlus newImp;
 	int curSlice;
 	int curX=-1;
@@ -74,9 +78,11 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	public void run(ImageProcessor ip) {
 
 		createGui();
-
-
-				Cell cell1=cellsStruct.addNewCell();		
+				
+				createFrameTimeMapping();
+				
+			
+//				Cell cell1=cellsStruct.addNewCell();		
 				try {			
 //					Roi roi1=new Roi(100,100,20,20);
 //					IJ.showMessage("image of ROI is:"+roi1.getImage());
@@ -158,7 +164,9 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		viewMenu=new JMenu("Exit&View");
 		menuBar.add(viewMenu);
 		menuItemDisplayNames= new JCheckBoxMenuItem("display names");
+		menuItemDisplayNames.doClick();
 		menuItemDisplayNames.addActionListener(this);
+		
 		viewMenu.add(menuItemDisplayNames);
 		
 		menuItemAdd2Set=new JMenuItem("Add to monitor set");
@@ -325,6 +333,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		this.imp = imp;
 		this.origImp=imp.duplicate();		
 		stack2frameMap=new TreeMap<Integer, Integer>();
+		frame2timeMap=new TreeMap<Integer, Integer>();
 		cellsStruct=new Cells();
 		this.generateStack2FrameMapping();
 		curSlice=1;
@@ -560,7 +569,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 				    	  }
 				      }
 				    };
-				    queryThread.start();
+				    queryThread.start();				  
 			}
 			
 		}	
@@ -673,18 +682,37 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 
 	
 	public Cells loadCellsStruct(){
-		OpenDialog od = new OpenDialog("Choose a cells structure file (note this will erase current structure)", null);  
-        String dir = od.getDirectory();  
-        if (null == dir){ 
-        	return null; // dialog was canceled  
-        }
-        dir = dir.replace('\\', '/'); // Windows safe  
-        if (!dir.endsWith("/")){
-        	dir += "/";  
-        }
-        String path=dir + od.getFileName();
+		String path=getFilePathDlg(1);
         return loadCellsStruct(path);
 	}
+	
+	
+	private static String getFilePathDlg(int type){
+		OpenDialog od = new OpenDialog("Choose a cells structure file (note this will erase current structure)", null);  
+		String dir = od.getDirectory();  
+		if (null == dir){ 
+			return null; // dialog was canceled  
+		}
+		dir = dir.replace('\\', '/'); // Windows safe  
+		if (!dir.endsWith("/")){
+			dir += "/";  
+		}
+		String filename=od.getFileName();
+		if(type==1){
+			return dir+filename;
+		}
+		else if(type==2){
+			return dir;
+		}
+		else if(type==3){
+			return filename;
+		}
+		else{
+			return null;
+		}
+	}
+
+	
 	
 	/**
 	 * Load and return the SiteNqbCellMap in the given path into the cellsStruct object 
@@ -816,10 +844,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		curCell=newCell;
 		setCellsGui();
 	}
-
-	@Override
-	public void keyPressed(KeyEvent key) {
-	}
+	
 	private int getSliceOfFrame(int frame){
 		Iterator<Integer> slicesIter=this.stack2frameMap.keySet().iterator();		
 		boolean found=false;
@@ -832,6 +857,11 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		return -1;
 	}
 
+
+	@Override
+	public void keyPressed(KeyEvent key) {
+	}
+	
 
 
 	@Override
@@ -906,8 +936,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 //	}
 //	
 	
-	void wandTrackCurCell(){
-		//TODO - how to make it on a monitor list
+	void wandTrackCurCell(){		
 		Roi roi= imp.getRoi();
 		if(roi==null){
 			return;
@@ -941,7 +970,32 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	
 	
 	void wandTrackSet(){
-
+		Set<Cell> missedCells=new HashSet<Cell>();
+		int prevFrame=this.getCurFrame();
+		boolean gotNext=nextSlice();		
+		
+		while(butContMode.isSelected()&& gotNext && missedCells.isEmpty()){
+			Iterator<Cell> citer=monitorSet.iterator();
+			while(citer.hasNext()){
+				Cell curCell=citer.next();			
+				if(!wandTrack(curCell,prevFrame)){
+					missedCells.add(curCell);
+				}				
+			}
+			drawFrame();
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if(!missedCells.isEmpty()){
+				butContMode.setSelected(false);
+				return;	
+			}
+			prevFrame=this.getCurFrame();
+			gotNext=nextSlice();			
+		}
 	}
 	
 	/*
@@ -959,6 +1013,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		if(dots==0){		
 			return false;
 		}
+		curCell=cell;
 		roi= imp.getRoi();
 		this.addRoiToCell(roi);
 		return true;
@@ -982,6 +1037,28 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 //		return null;
 //	}
 
+	void createFrameTimeMapping(){
+		PathTokens pt=new PathTokens(imp.getImageStack(),1);
+		String path=pt.getPre()+pt.getSite()+"_";
+		String dir=JoyDivision_.getFilePathDlg(2);
+		SortedSet<Integer> sortedFrameNums=new TreeSet<Integer>();
+		sortedFrameNums.addAll(this.stack2frameMap.values());
+		Iterator<Integer> fiter=sortedFrameNums.iterator();
+		long init=-1;
+		while(fiter.hasNext()){
+			int frameNum=fiter.next();
+			String fullpath=dir+path+frameNum+".tif";
+			File file = new File(fullpath);			
+			long modifiedTime = file.lastModified();
+			if(init<0){
+				init=modifiedTime;
+			}
+			int totTime=(int)(modifiedTime-init)/60000;
+			frame2timeMap.put(frameNum, totTime);
+			IJ.showMessage("file: "+fullpath+" created at: "+totTime);
+			
+		}
+	}
 	
 	
 	private void addToMonitorSet(){
