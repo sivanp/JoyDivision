@@ -166,11 +166,11 @@ public class MTrack3_ implements PlugInFilter, Measurements  {
 	}
 	
 
-	public void track(ImagePlus imp, int minSize, int maxSize, float maxVelocity, String directory, String filename) {
+	public Vector<Vector<Particle>>  track(ImagePlus imp, int minSize, int maxSize, float maxVelocity, String directory, String filename) {
 		int nFrames = imp.getStackSize();
 		if (nFrames<2) {
 			IJ.showMessage("MTrack3", "Stack required");
-			return;
+			return null;
 		}
 
 		ImageStack stack = imp.getStack();
@@ -194,7 +194,7 @@ public class MTrack3_ implements PlugInFilter, Measurements  {
 			ParticleAnalyzer pa = new ParticleAnalyzer(options, measurements, rt, minSize, maxSize);
 			if(!pa.analyze(imp, stack.getProcessor(iFrame+1))){
 				// the particle analyzer should produce a dialog on error, so don't make another one
-				return;
+				return null;
 			}
 			float[] sxRes = rt.getColumn(ResultsTable.X_CENTROID);				
 			float[] syRes = rt.getColumn(ResultsTable.Y_CENTROID);
@@ -288,15 +288,19 @@ public class MTrack3_ implements PlugInFilter, Measurements  {
 		IJ.showProgress(1.0);
 		theTracks = newTracks;
 		trackCount = theTracks.size();
-		
+	
 		IJ.showStatus("Assigning track numbers and creating results");
 		ResultsTable positionTable = new ResultsTable();
 		// set up and display the table with particle positions
-		if(theParticles.size() > 0){
-			for(int i = 0; i < theTracks.size(); i++){
+		if(theParticles.size() > 0)
+		{
+			for(int i = 0; i < theTracks.size(); i++)
+			{
 				Vector<Particle> trackParticles = theTracks.get(i);
-				if(trackParticles.size() >= minTrackLength){
-					for(Particle aParticle : trackParticles){	
+				if(trackParticles.size() >= minTrackLength)
+				{
+					for(Particle aParticle : trackParticles)
+					{	
 						positionTable.incrementCounter();
 						aParticle.displayTrackNr = i+1;
 						positionTable.addValue("Track", aParticle.displayTrackNr);
@@ -428,7 +432,7 @@ public class MTrack3_ implements PlugInFilter, Measurements  {
 			IJ.showStatus("Creating paths");
 			if (imp.getCalibration().scaled()) {
 				IJ.showMessage("MTrack3", "Cannot display paths if image is spatially calibrated");
-				return;
+				return null;
 			}
 			ImageProcessor ip = new ByteProcessor(imp.getWidth(), imp.getHeight());
 			ip.setColor(Color.white);
@@ -451,6 +455,8 @@ public class MTrack3_ implements PlugInFilter, Measurements  {
 			new ImagePlus("Paths", ip).show();
 		}
 		IJ.showStatus("Done!");
+		
+		return theTracks;
 	}
 
 	// Utility functions
