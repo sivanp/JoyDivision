@@ -1,3 +1,5 @@
+import ij.ImageStack;
+
 public class PathTokens{
 		String path;
 		String pre;
@@ -38,6 +40,9 @@ public class PathTokens{
 		}
 
 	
+		public PathTokens(ImageStack stack,int slice){
+			this(stack.getSliceLabel(slice));			
+		}
 
 		// the path is sometimes the label which holds much more
 		public PathTokens(String path){		
