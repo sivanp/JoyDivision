@@ -556,7 +556,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 				    		  wandTrackCurCell();
 				    	  }
 				    	  else{
-				    		  wandTrackList();
+				    		  wandTrackSet();
 				    	  }
 				      }
 				    };
@@ -940,6 +940,10 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	}		
 	
 	
+	void wandTrackSet(){
+
+	}
+	
 	/*
 	 * wandTrack the given cell in the current frame according to the ROI of the cell in prevFrame
 	 */
@@ -961,9 +965,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	}
 	
 	
-	void wandTrackList(){
-		
-	}
+	
 
 //	/**
 //	 * 

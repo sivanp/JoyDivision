@@ -1,5 +1,3 @@
-import java.util.StringTokenizer;
-
 public class PathTokens{
 		String path;
 		String pre;
