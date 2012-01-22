@@ -15,8 +15,8 @@ public class Cell implements Serializable
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	Cells parentCells;
-	private int id;
+	protected Cells parentCells;
+	protected int id;
 
 
 	Cell(int id,Cells parentCells)
@@ -57,8 +57,8 @@ public class Cell implements Serializable
 			Iterator<Integer> iter = frames.iterator();
 			while(iter.hasNext()){
 				Integer frame=iter.next();
-				Roi roi=this.getLocationInFrame(frame);
-				res+=" "+frame+": "+roi+"; ";
+				PolyProperty roi=this.getLocationInFrame(frame);
+				res+=" "+frame+": "+roi.toString()+"; ";
 			}		
 		}
 		Set<Cell> daughters=this.getDaughters();
@@ -175,11 +175,17 @@ public class Cell implements Serializable
 		//converting the ROI to polygon ROI that will not hold imagePlus that screws up serialization...
 		Polygon poly=roi.getPolygon();
 		roi=new PolygonRoi(poly,Roi.FREEROI);
+		
 		//TODO should we conduct checks such that a mother cell cannot continue in frames following daughters birth?
 		parentCells.getCl().addLocationToCell(this, frame, roi);
 	}
+	
+	public void addLocation(int frame , PolyProperty proi) 
+	{
+		parentCells.getCl().addLocationToCell(this, frame, proi);
+	}
 
-	public Roi getLocationInFrame(int frame){
+	public PolyProperty getLocationInFrame(int frame){
 		return parentCells.getCl().getCellLocationInFrame(this, frame);
 	}
 

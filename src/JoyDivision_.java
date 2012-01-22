@@ -15,6 +15,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -23,9 +24,11 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import ij.measure.Measurements;
 import ij.plugin.filter.*;
 import ij.*;
 import ij.process.ImageProcessor;
+import ij.process.ImageStatistics;
 
 import javax.swing.*;
 
@@ -71,17 +74,15 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	JMenuItem menuItemAdd2Set;
 	JMenuItem menuItemRemoveFromSet;
 	JMenuItem menuItemClearSet;
+	JMenuItem menuItemGetTimes;
+	JMenuItem menuItemExtractFluo;
 	
 	
 	boolean mouseListening=false;
 
 	public void run(ImageProcessor ip) {
-
+		
 		createGui();
-				
-				createFrameTimeMapping();
-				
-			
 //				Cell cell1=cellsStruct.addNewCell();		
 				try {			
 //					Roi roi1=new Roi(100,100,20,20);
@@ -180,6 +181,16 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		menuItemClearSet=new JMenuItem("Clear monitor set");
 		menuItemClearSet.addActionListener(this);
 		viewMenu.add(menuItemClearSet);
+		
+		menuItemGetTimes=new JMenuItem("Get time of stack files");
+		menuItemGetTimes.addActionListener(this);
+		viewMenu.add(menuItemGetTimes);
+		
+		menuItemExtractFluo=new JMenuItem("Extract Fluorescence");
+		menuItemExtractFluo.addActionListener(this);
+		viewMenu.add(menuItemExtractFluo);
+	
+		
 		
 		c.weightx=0.5;
 		c.gridx=0;
@@ -288,7 +299,6 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 
 		butContMode = new JToggleButton("Cont Mode");
 		butContMode.addActionListener(this);
-//		butContMode.doClick();
 		c.weightx=0.5;
 		c.gridx=3;
 		c.gridy=3;
@@ -575,8 +585,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		}	
 		
 		else if(e.getSource()==menuItemSaveStruct){
-			this.saveCellStructure();	
-			 
+			this.saveCellStructure();				 
 		}
 		else if(e.getSource()==menuItemLoadStruct){
 			cellsStruct=this.loadCellsStruct();
@@ -592,7 +601,13 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		else if(e.getSource()==menuItemClearSet){
 			this.clearMonitorSet();
 		}
+		else if(e.getSource()==menuItemGetTimes){
+			this.createFrameTimeMapping();
+		}
 		
+		else if(e.getSource()==menuItemExtractFluo){
+			extractFluo();
+		}
 		drawFrame();
 	}
 	public void itemStateChanged(ItemEvent e){
@@ -626,7 +641,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 			Iterator<Cell> iter=frameCells.iterator();
 			while(iter.hasNext()){
 				Cell curCell=iter.next();			
-				Roi mroi=(Roi) curCell.getLocationInFrame(frame).clone();
+				Roi mroi=(Roi) curCell.getLocationInFrame(frame).getRoi().clone();
 				if(monitorSet.contains(curCell)){
 					mroi.setStrokeColor(Color.CYAN);
 				}
@@ -1002,7 +1017,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	 * wandTrack the given cell in the current frame according to the ROI of the cell in prevFrame
 	 */
 	private boolean wandTrack(Cell cell, int prevFrame){		
-		Roi roi = cell.getLocationInFrame(prevFrame);				
+		Roi roi = cell.getLocationInFrame(prevFrame).getRoi();				
 		double tolerance=0;
 				
 		//TODO - check about the offScreen if needed here...
@@ -1060,7 +1075,67 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		}
 	}
 	
-	
+	/**
+	 * The imagePlus opened is taken and for each frame the relative roi from each cell is taken 
+	 * for which the mean values in the relative location in the current ImagePlus is calculated and added 
+	 */
+	void extractFluo(){
+		GenericDialog gd = new GenericDialog("YesNoCancel");
+		gd.addMessage("Is the current image contains the fluorescence wished to be extracted?");
+		gd.enableYesNoCancel();
+		gd.showDialog();
+		if (gd.wasCanceled())
+			return;
+		else if (!gd.wasOKed())
+			return;
+		gd=new GenericDialog("What is the name of the fluoresence");
+		gd.addStringField("fluoName", "GFP");	
+		gd.showDialog();
+		TextField txt=(TextField)gd.getStringFields().firstElement();
+		String fluoname=txt.getText();		
+
+		if(!(cellsStruct instanceof PropertiesCells)){
+			PropertiesCells newCellsStruct=new PropertiesCells(cellsStruct);
+			cellsStruct=newCellsStruct;			
+		}
+		else{
+			Collection<String> props=((PropertiesCells) cellsStruct).getPropertyNames();
+			if(props!=null){
+				if(props.contains(fluoname)){
+					IJ.showMessage("Structure already contains Property "+fluoname);
+					return;
+				}
+			}
+		}
+		//now we are ready to start:
+		((PropertiesCells) cellsStruct).addProperty(fluoname);			
+		//we will go over all frames and update their ROI to be PolyProperty and hold the correct value-
+		//here- we calculate the mean fluo of the each cell in each frame
+
+		for (int curSlice=1; curSlice<=imp.getStackSize();curSlice++){
+			imp.setSlice(curSlice);
+			int curFrame=getCurFrame();
+			Set<Cell> frameCells=cellsStruct.getCellsInFrame(curFrame);
+			if(frameCells!=null){
+				Iterator<Cell> citer=frameCells.iterator();
+				while(citer.hasNext()){
+					Cell curCell=citer.next();
+					PolyProperty curRoi=curCell.getLocationInFrame(curFrame);								
+					//find the mean of this Roi
+					imp.setRoi(curRoi.getRoi());
+					ImageStatistics stats= ImageStatistics.getStatistics(imp.getProcessor(), Measurements.MEAN,imp.getCalibration());
+					PropertiesCells propCells=(PropertiesCells)cellsStruct;
+					int propId=propCells.getPropertyId(fluoname);
+					curRoi.setProperty(propId, stats.mean);
+					curCell.addLocation(curFrame, curRoi); 
+					IJ.showMessage("current Cell roi: "+curRoi);
+				}
+			}
+		}
+		IJ.showMessage("current Cells: "+cellsStruct);
+	}
+
+
 	private void addToMonitorSet(){
 		monitorSet.add(curCell);
 	}

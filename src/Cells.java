@@ -1,4 +1,3 @@
-import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 
 import java.io.Serializable;
@@ -14,10 +13,10 @@ public class Cells extends Hashtable<Integer, Cell> implements Serializable
 {
 	private static final long serialVersionUID = 1L;
 
-	private int lastId;
+	protected int lastId;
 
-	private CellParents cp; 
-	private CellsLocations cl;
+	protected CellParents cp; 
+	protected CellsLocations cl;
 
 
 	public Cells(int lastId) 
@@ -29,10 +28,14 @@ public class Cells extends Hashtable<Integer, Cell> implements Serializable
 	}
 	public Cells() 
 	{
-		super();
-		lastId = 0;
-		cp=new CellParents();
-		cl=new CellsLocations();
+		this(0);
+	}
+	
+	public Cells(Cells cells){
+		super(cells);
+		this.lastId = cells.lastId;
+		cp=cells.cp;
+		cl=cells.cl;
 	}
 
 	public CellParents getCp() {
@@ -70,7 +73,7 @@ public class Cells extends Hashtable<Integer, Cell> implements Serializable
 	}
 	
 	public Set<Cell> getCellsInFrame(int frame){
-		Map<Cell,PolygonRoi> cells=cl.getCellsByFrame(frame);
+		Map<Cell,PolyProperty> cells=cl.getCellsByFrame(frame);
 		if(cells==null){
 			return null;
 		}
@@ -86,11 +89,11 @@ public class Cells extends Hashtable<Integer, Cell> implements Serializable
 	 */
 	public Set<Cell> getCellsContaining(int frame, int x, int y){
 		Set<Cell> resCells= new HashSet<Cell>();
-		Map<Cell, PolygonRoi> cellLocs=cl.getCellsByFrame(frame);
+		Map<Cell, PolyProperty> cellLocs=cl.getCellsByFrame(frame);
 		Iterator<Cell> citer=cellLocs.keySet().iterator();
 		while(citer.hasNext()){
 			Cell c=citer.next();
-			Roi roi=cellLocs.get(c);
+			Roi roi=cellLocs.get(c).getRoi();
 			if(roi.contains(x, y)){
 				resCells.add(c);
 			}

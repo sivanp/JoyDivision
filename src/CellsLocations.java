@@ -13,10 +13,10 @@ public class CellsLocations implements Serializable {
 	
 	private static final long serialVersionUID = 3641410585003171843L;
 	Map<Integer,Set<Cell>> byFrame;
-	Map<Cell, Map<Integer,PolygonRoi>> byCell;
+	Map<Cell, Map<Integer,PolyProperty>> byCell;
 	
 	public CellsLocations(){
-		byCell= new HashMap<Cell, Map<Integer,PolygonRoi>>();
+		byCell= new HashMap<Cell, Map<Integer,PolyProperty>>();
 		byFrame=new HashMap<Integer,Set<Cell>>();
 	}
 	
@@ -26,9 +26,9 @@ public class CellsLocations implements Serializable {
 		
 	}
 
-	public Map<Integer,PolygonRoi> addLocationToCell(Cell cell, Integer frame, Roi roi){
-		Polygon poly=roi.getPolygon();
-		PolygonRoi proi=new PolygonRoi(poly,Roi.FREEROI);
+	public Map<Integer,PolyProperty> addLocationToCell(Cell cell, Integer frame, PolyProperty proi){
+		Polygon poly=proi.getRoi().getPolygon();
+		proi=new PolyProperty(poly,Roi.FREEROI);		
 		Set<Cell> cells=byFrame.get(frame);
 		if(cells ==null){
 			cells=new HashSet<Cell>();
@@ -36,17 +36,23 @@ public class CellsLocations implements Serializable {
 		cells.add(cell);
 		byFrame.put(frame, cells);
 		
-		Map<Integer, PolygonRoi> locs=byCell.get(cell);
+		Map<Integer, PolyProperty> locs=byCell.get(cell);
 		if(locs==null){
-			locs=new HashMap<Integer,PolygonRoi>();
+			locs=new HashMap<Integer,PolyProperty>();
 		}
 		locs.put(frame, proi);
 		return this.put(cell, locs);
+	}
+	
+	public Map<Integer,PolyProperty> addLocationToCell(Cell cell, Integer frame, Roi roi){
+		Polygon poly=roi.getPolygon();
+		PolyProperty proi=new PolyProperty(poly,Roi.FREEROI);		
+		return this.addLocationToCell(cell, frame, proi);
 		
 	}
 	
 	
-	public Map<Integer, PolygonRoi> put(Cell cell, Map<Integer, PolygonRoi> value) 
+	public Map<Integer, PolyProperty> put(Cell cell, Map<Integer, PolyProperty> value) 
 	{
 		Set<Integer> frames=value.keySet();
 		Iterator<Integer> fiter=frames.iterator();
@@ -64,8 +70,8 @@ public class CellsLocations implements Serializable {
 	}
 	
 	
-	public Map<Integer, PolygonRoi> removeCell(Cell cell) {
-		Map<Integer,PolygonRoi> locs=byCell.get(cell);
+	public Map<Integer, PolyProperty> removeCell(Cell cell) {
+		Map<Integer,PolyProperty> locs=byCell.get(cell);
 		if(locs==null){
 			return null;
 		}
@@ -80,8 +86,8 @@ public class CellsLocations implements Serializable {
 		return byCell.remove(cell);
 	}
 	
-	public Map<Cell,PolygonRoi> getCellsByFrame(Integer frame){
-		Map<Cell, PolygonRoi> locs=new HashMap<Cell,PolygonRoi>();
+	public Map<Cell,PolyProperty> getCellsByFrame(Integer frame){
+		Map<Cell, PolyProperty> locs=new HashMap<Cell,PolyProperty>();
 		Set<Cell> cells=byFrame.get(frame);
 		if(cells==null){
 			return null;
@@ -89,7 +95,7 @@ public class CellsLocations implements Serializable {
 		Iterator<Cell> citer = cells.iterator();
 		while(citer.hasNext()){
 			Cell c=citer.next();
-			PolygonRoi roi=byCell.get(c).get(frame);
+			PolyProperty roi=byCell.get(c).get(frame);
 			locs.put(c,roi); 
 		}
 		return locs;
@@ -101,12 +107,12 @@ public class CellsLocations implements Serializable {
 	 * @param frame
 	 * @return PolygonRoi associated with the given cell in the given frame
 	 */
-	public PolygonRoi getCellLocationInFrame(Cell cell, int frame){
-		Map<Cell, PolygonRoi> cellsInFrame=getCellsByFrame(frame);
+	public PolyProperty getCellLocationInFrame(Cell cell, int frame){
+		Map<Cell, PolyProperty> cellsInFrame=getCellsByFrame(frame);
 		return cellsInFrame.get(cell);
 	}
 	public Set<Integer> getFrames(Cell cell) {
-		Map<Integer,PolygonRoi> locs=byCell.get(cell);
+		Map<Integer,PolyProperty> locs=byCell.get(cell);
 		if(locs==null){
 			return null;
 		}
@@ -120,7 +126,7 @@ public class CellsLocations implements Serializable {
 	 * @param frame
 	 */
 	public boolean removeCellLocation(Cell cell, int frame) {
-		Map<Integer,PolygonRoi> cellsLocs=this.byCell.get(cell);
+		Map<Integer,PolyProperty> cellsLocs=this.byCell.get(cell);
 		if(cellsLocs==null){
 			return false;
 		}
@@ -140,10 +146,10 @@ public class CellsLocations implements Serializable {
 	 * @param frame
 	 */
 	public void swapCellLocations(Cell cell1, Cell cell2, Integer frame) {
-		Map<Integer, PolygonRoi> locs1=byCell.get(cell1);
-		Map<Integer, PolygonRoi> locs2=byCell.get(cell2);
-		Map<Integer, PolygonRoi> newLocs1=new HashMap<Integer,PolygonRoi>();
-		Map<Integer, PolygonRoi> newLocs2=new HashMap<Integer,PolygonRoi>();
+		Map<Integer, PolyProperty> locs1=byCell.get(cell1);
+		Map<Integer,PolyProperty> locs2=byCell.get(cell2);
+		Map<Integer, PolyProperty> newLocs1=new HashMap<Integer,PolyProperty>();
+		Map<Integer, PolyProperty> newLocs2=new HashMap<Integer,PolyProperty>();
 		
 		Set<Integer> frames1=locs1.keySet();
 		Set<Integer> frames2=locs2.keySet();
