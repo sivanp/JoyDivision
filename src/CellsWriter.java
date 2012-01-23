@@ -43,7 +43,7 @@ public class CellsWriter {
 			Cell curCell=cells.get(cellId);
 			res+=("cell id = " +cellId.toString()+" ; "+curCell.getName()+"\n");		
 		}
-		res+="---\n---cell poly---";	
+		res+="\n---cell poly---";	
 		//output all cell's locations by frame
 		Collection<Cell> allCells=cells.values();
 		Iterator<Cell> citer= allCells.iterator();
@@ -66,7 +66,7 @@ public class CellsWriter {
 			Iterator<Integer> piter= propIds.iterator();
 			while(piter.hasNext()){
 				int propId=piter.next();
-				res+="propName="+ ((PropertiesCells)cells).getPropertyName(propId);
+				res+="---propName="+ ((PropertiesCells)cells).getPropertyName(propId)+"---";
 				citer= allCells.iterator();
 				while(citer.hasNext()){
 					Cell curCell=citer.next();
