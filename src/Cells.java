@@ -60,7 +60,6 @@ public class Cells extends Hashtable<Integer, Cell> implements Serializable
 		return super.remove(c.getId());
 	}
 
-
 	/**
 	 * Add a new cell to this structure, with the highest id
 	 * @return The new Cell instance

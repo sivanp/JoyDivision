@@ -1,3 +1,4 @@
+import ij.ImagePlus;
 import ij.ImageStack;
 
 public class PathTokens{
@@ -74,4 +75,12 @@ public class PathTokens{
 //			token=tokenizer.nextToken();
 //			frame=Integer.parseInt(token);
 		}
+		
+		public static int getCurFrame(ImagePlus imp){
+			ImageStack stack=imp.getStack();
+			String label=stack.getSliceLabel(imp.getCurrentSlice());
+			PathTokens pt=new PathTokens(label);
+			return pt.getFrame();
+		}
+
 	}

@@ -58,7 +58,7 @@ public class Cell implements Serializable
 			while(iter.hasNext()){
 				Integer frame=iter.next();
 				PolyProperty roi=this.getLocationInFrame(frame);
-				res+=" "+frame+": "+roi.toString()+"; ";
+				res+=" "+frame+": "+roi.toString()+";";
 			}		
 		}
 		Set<Cell> daughters=this.getDaughters();

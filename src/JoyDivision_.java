@@ -45,7 +45,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	Set<Cell> monitorSet;
 	Cells cellsStruct;
 	Font font=new Font("Book Antiqua", Font.PLAIN, 10);
-	
+
 	//GUI Stuff
 	JPanel panel;
 	JFrame frame;
@@ -69,6 +69,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	JMenu fileMenu;
 	JMenuItem menuItemSaveStruct;
 	JMenuItem menuItemLoadStruct;
+	JMenuItem menuItemExportStruct;
 	JMenu viewMenu;
 	JCheckBoxMenuItem menuItemDisplayNames;
 	JMenuItem menuItemAdd2Set;
@@ -76,60 +77,59 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	JMenuItem menuItemClearSet;
 	JMenuItem menuItemGetTimes;
 	JMenuItem menuItemExtractFluo;
-	
-	
+
 	boolean mouseListening=false;
 
 	public void run(ImageProcessor ip) {
-		
+
 		createGui();
-//				Cell cell1=cellsStruct.addNewCell();		
-				try {			
-//					Roi roi1=new Roi(100,100,20,20);
-//					IJ.showMessage("image of ROI is:"+roi1.getImage());
-//					roi1=imp.getRoi();
-//					IJ.showMessage("image of ROI is:"+roi1.getImage());
-//					Polygon poly=roi1.getPolygon();
-//					roi1=new PolygonRoi(poly,Roi.FREELINE);
-//					IJ.showMessage("image of ROI is:"+roi1.getImage());
-//					roi1.setImage(null);
-//					cell1.addLocation(1003, roi1);
-		//			cell1.addLocation(1002, roi1);
-		//			cell1.addLocation(1001, roi1);
-		//			Cell cell2=cellsStruct.addNewCell();
-		//			cell2.addMother(cell1);
-		//			Cell cell3=cellsStruct.addNewCell();
-		//			cell2.addDaughter(cell3);
-		//			cell1.addMother(cell3);
-		//			cell3.addDaughter(cell1);			
-		//			IJ.showMessage("before dissociating cell2 and cell1: "+cellsStruct.toString());
-		//			cellsStruct.dissociateMotherDaughter(cell2,cell1);
-		//			IJ.showMessage("after dissociating cell2 and cell1: "+cellsStruct.toString());			
-		//			cellsStruct.remove(cell2);
-		//			IJ.showMessage("after deleting 2: "+cellsStruct.toString());
-		//			cell3.addMother(cell2);
-		//			cell3.addMother(cell1);
-		//			cellsStruct.dissociateMotherDaughter(cell3, cell1);
-		//			IJ.showMessage("after dissociating cell3 to cell1 wrong: "+cellsStruct.toString());
-		//			cellsStruct.dissociateMotherDaughter(cell1, cell3);
-		//			IJ.showMessage("after dissociating cell3 to cell1 right: "+cellsStruct.toString());
-		//			cell1.addDaughter(cell3);
-		//			IJ.showMessage("after adding cell3 to cell1 right: "+cellsStruct.toString());
-		//			cellsStruct.remove(cell1);
-		//			IJ.showMessage("after removing cell1: "+cellsStruct.toString());
-		//			cellsStruct.remove(cell3);
-		//			IJ.showMessage("after removing cell3: "+cellsStruct.toString());
-		//
-		//
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}		
-//				IJ.showMessage("before save: "+cellsStruct.toString());
-//				String filename="C:/Users/sivan-nqb/Desktop/cellStruct";
-//				saveCellsStruct(filename);
-//				Cells cellsStructLoaded = loadCellsStruct(filename);
-//				IJ.showMessage("after save: "+cellsStructLoaded.toString());
+		//				Cell cell1=cellsStruct.addNewCell();		
+		try {			
+			//					Roi roi1=new Roi(100,100,20,20);
+			//					IJ.showMessage("image of ROI is:"+roi1.getImage());
+			//					roi1=imp.getRoi();
+			//					IJ.showMessage("image of ROI is:"+roi1.getImage());
+			//					Polygon poly=roi1.getPolygon();
+			//					roi1=new PolygonRoi(poly,Roi.FREELINE);
+			//					IJ.showMessage("image of ROI is:"+roi1.getImage());
+			//					roi1.setImage(null);
+			//					cell1.addLocation(1003, roi1);
+			//			cell1.addLocation(1002, roi1);
+			//			cell1.addLocation(1001, roi1);
+			//			Cell cell2=cellsStruct.addNewCell();
+			//			cell2.addMother(cell1);
+			//			Cell cell3=cellsStruct.addNewCell();
+			//			cell2.addDaughter(cell3);
+			//			cell1.addMother(cell3);
+			//			cell3.addDaughter(cell1);			
+			//			IJ.showMessage("before dissociating cell2 and cell1: "+cellsStruct.toString());
+			//			cellsStruct.dissociateMotherDaughter(cell2,cell1);
+			//			IJ.showMessage("after dissociating cell2 and cell1: "+cellsStruct.toString());			
+			//			cellsStruct.remove(cell2);
+			//			IJ.showMessage("after deleting 2: "+cellsStruct.toString());
+			//			cell3.addMother(cell2);
+			//			cell3.addMother(cell1);
+			//			cellsStruct.dissociateMotherDaughter(cell3, cell1);
+			//			IJ.showMessage("after dissociating cell3 to cell1 wrong: "+cellsStruct.toString());
+			//			cellsStruct.dissociateMotherDaughter(cell1, cell3);
+			//			IJ.showMessage("after dissociating cell3 to cell1 right: "+cellsStruct.toString());
+			//			cell1.addDaughter(cell3);
+			//			IJ.showMessage("after adding cell3 to cell1 right: "+cellsStruct.toString());
+			//			cellsStruct.remove(cell1);
+			//			IJ.showMessage("after removing cell1: "+cellsStruct.toString());
+			//			cellsStruct.remove(cell3);
+			//			IJ.showMessage("after removing cell3: "+cellsStruct.toString());
+			//
+			//
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+		//				IJ.showMessage("before save: "+cellsStruct.toString());
+		//				String filename="C:/Users/sivan-nqb/Desktop/cellStruct";
+		//				saveCellsStruct(filename);
+		//				Cells cellsStructLoaded = loadCellsStruct(filename);
+		//				IJ.showMessage("after save: "+cellsStructLoaded.toString());
 		//
 		//
 		//		
@@ -144,7 +144,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	 */
 	private void createGui() {
 		IJ.run("Misc...", "divide=Infinity require run");
-		frame = new JFrame("testing!");
+		frame = new JFrame("JoyDivision!");
 		panel = new JPanel(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();	
 		panel.setBackground(SystemColor.control);
@@ -153,45 +153,49 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		menuBar = new JMenuBar();
 		fileMenu = new JMenu("File");		
 		menuBar.add(fileMenu);
-		
+
 		menuItemSaveStruct = new JMenuItem("save cell structure");
 		menuItemSaveStruct.addActionListener(this);
 		fileMenu.add(menuItemSaveStruct);
-		
+
 		menuItemLoadStruct=new JMenuItem("Load cell structure");
 		menuItemLoadStruct.addActionListener(this);
 		fileMenu.add(menuItemLoadStruct);		
+
+		menuItemExportStruct = new JMenuItem("Export cell structure");
+		menuItemExportStruct.addActionListener(this);
+		fileMenu.add(menuItemExportStruct);
 		
-		viewMenu=new JMenu("Exit&View");
+		viewMenu=new JMenu("Edit&View");
 		menuBar.add(viewMenu);
 		menuItemDisplayNames= new JCheckBoxMenuItem("display names");
 		menuItemDisplayNames.doClick();
 		menuItemDisplayNames.addActionListener(this);
-		
+
 		viewMenu.add(menuItemDisplayNames);
-		
+
 		menuItemAdd2Set=new JMenuItem("Add to monitor set");
 		menuItemAdd2Set.addActionListener(this);
 		viewMenu.add(menuItemAdd2Set);
-		
+
 		menuItemRemoveFromSet= new JMenuItem("Remove from monitor set");
 		menuItemRemoveFromSet.addActionListener(this);
 		viewMenu.add(menuItemRemoveFromSet);
-		
+
 		menuItemClearSet=new JMenuItem("Clear monitor set");
 		menuItemClearSet.addActionListener(this);
 		viewMenu.add(menuItemClearSet);
-		
+
 		menuItemGetTimes=new JMenuItem("Get time of stack files");
 		menuItemGetTimes.addActionListener(this);
 		viewMenu.add(menuItemGetTimes);
-		
+
 		menuItemExtractFluo=new JMenuItem("Extract Fluorescence");
 		menuItemExtractFluo.addActionListener(this);
 		viewMenu.add(menuItemExtractFluo);
-	
-		
-		
+
+
+
 		c.weightx=0.5;
 		c.gridx=0;
 		c.gridy=0;
@@ -265,31 +269,31 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		c.gridx=0;
 		c.gridy=6;
 		panel.add(butDeleteCell,c);
-		
-		
+
+
 		butDeleteCellLocations = new JButton("Delete Cell from frame");
 		butDeleteCellLocations.addActionListener(this);
 		c.weightx=0.5;
 		c.gridx=1;
 		c.gridy=6;
 		panel.add(butDeleteCellLocations,c);
-		 
+
 		butSwapCells = new JButton("butSwapCells");
 		butSwapCells.addActionListener(this);
 		c.weightx=0.5;
 		c.gridx=2;
 		c.gridy=6;
 		panel.add(butSwapCells,c);
-		
-		
-		
+
+
+
 		butAddMom = new JButton("Add Mother");
 		butAddMom.addActionListener(this);
 		c.weightx=0.5;
 		c.gridx=0;
 		c.gridy=3;
 		panel.add(butAddMom,c);
-		
+
 		butRemoveMom = new JButton("Remove Mother");
 		butRemoveMom.addActionListener(this);
 		c.weightx=0.5;
@@ -324,10 +328,6 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		c.gridx=0;
 		c.gridy=7;
 		panel.add(butAddLoc,c);
-
-
-
-		
 		
 		imp.getCanvas().addMouseListener(this);
 		imp.getCanvas().addKeyListener(this) ;
@@ -349,7 +349,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		curSlice=1;
 		curCell=null;
 		monitorSet=new HashSet<Cell>();
-		
+
 		return DOES_ALL;
 	}
 
@@ -411,10 +411,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	 * @return the current frame from the current slice name (in the label)
 	 */
 	public int getCurFrame(){
-		ImageStack stack=imp.getStack();
-		String label=stack.getSliceLabel(imp.getCurrentSlice());
-		PathTokens pt=new PathTokens(label);
-		return pt.getFrame();
+		return PathTokens.getCurFrame(imp);
 	}
 
 	/**
@@ -448,7 +445,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 				this.updateCurCell(cell);				
 			}				
 		}
-		
+
 		else if(e.getSource()==butCellDivision){
 			Roi roi = imp.getRoi();
 			if(roi==null || curCell==null){
@@ -461,11 +458,11 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 			this.updateCurCell(newCell);			
 			this.addRoiToCell(imp.getRoi());			
 		}
-		
+
 		else if(e.getSource()==butCellStart){
 			getToCellStart();
 		}
-		
+
 		else if(e.getSource()==butCellEnd){
 			getToCellEnd();
 		}
@@ -504,7 +501,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 			curCell.removeMother(mom);
 			this.setCellsGui();			
 		}
-		
+
 		else if(e.getSource()==butDeleteCell){
 			if(curCell==null){
 				IJ.showMessage("cannot delete: no current cell");
@@ -513,7 +510,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 			cellsStruct.remove(curCell);
 			this.updateCurCell(null);	
 		}
-		
+
 		else if (e.getSource()==butDeleteCellLocations){
 			if(curCell==null){
 				IJ.showMessage("cannot delete: no current cell");
@@ -536,7 +533,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 				removed=curCell.deleteLocation(frame);				
 			}
 		}
-		
+
 		else if(e.getSource()==butSwapCells){
 			GenericDialog gd=new GenericDialog("Swap cells");
 			gd.addNumericField("Id of first cell?", -1, 4);
@@ -562,39 +559,43 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 			Integer frame=(int)gd.getNextNumber();			
 			cellsStruct.swapCellLocations(cell1, cell2, frame);			
 		}
-		
+
 		else if(e.getSource()==butAddSis){
 			IJ.showMessage("Not set yet go to mother....");
 		}
-		
+
 		else if(e.getSource()==butContMode){
 			if(butContMode.isSelected()){
 				Thread queryThread = new Thread() {
-				      public void run() {
-				    	  if(monitorSet.isEmpty()){ //monitor curCell
-				    		  wandTrackCurCell();
-				    	  }
-				    	  else{
-				    		  wandTrackSet();
-				    	  }
-				      }
-				    };
-				    queryThread.start();				  
+					public void run() {
+						if(monitorSet.isEmpty()){ //monitor curCell
+							wandTrackCurCell();
+						}
+						else{
+							wandTrackSet();
+						}
+					}
+				};
+				queryThread.start();				  
 			}
-			
+
 		}	
-		
+
 		else if(e.getSource()==menuItemSaveStruct){
 			this.saveCellStructure();				 
 		}
 		else if(e.getSource()==menuItemLoadStruct){
 			cellsStruct=this.loadCellsStruct();
 		}
-		
+		else if (e.getSource()==menuItemExportStruct){
+			String path=getSavePath();
+			CellsWriter.writeStructure(path, cellsStruct);
+		}
+
 		else if(e.getSource()==menuItemAdd2Set){
 			this.addToMonitorSet();
 		}
-		
+
 		else if(e.getSource()==menuItemRemoveFromSet){
 			this.removeFromMonitorSet();
 		}
@@ -604,7 +605,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		else if(e.getSource()==menuItemGetTimes){
 			this.createFrameTimeMapping();
 		}
-		
+
 		else if(e.getSource()==menuItemExtractFluo){
 			extractFluo();
 		}
@@ -652,7 +653,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 				ov.add(mroi);
 			}
 		}
-		
+
 		if(menuItemDisplayNames.isSelected()){
 			ov.setLabelFont(font);
 			ov.setLabelColor(Color.GREEN);
@@ -683,25 +684,30 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		}
 
 	}
-	
+
 	public void saveCellStructure(){
-		 SaveDialog sd = new SaveDialog("Save cell structure", "cell Struct", "");
-		 String name = sd.getFileName();
-        if (name==null){
-            return;  
-        }
-        String directory = sd.getDirectory();         
-        String path = directory+name;
-        this.saveCellsStruct(path);
+		String path=getSavePath();
+		this.saveCellsStruct(path);
+	}
+	
+	public String getSavePath(){
+		SaveDialog sd = new SaveDialog("Save cell structure", "cell Struct", "");
+		String name = sd.getFileName();
+		if (name==null){
+			return null;  
+		}
+		String directory = sd.getDirectory();         
+		String path = directory+name;
+		return path;
 	}
 
-	
+
 	public Cells loadCellsStruct(){
 		String path=getFilePathDlg(1);
-        return loadCellsStruct(path);
+		return loadCellsStruct(path);
 	}
-	
-	
+
+
 	private static String getFilePathDlg(int type){
 		OpenDialog od = new OpenDialog("Choose a cells structure file (note this will erase current structure)", null);  
 		String dir = od.getDirectory();  
@@ -727,8 +733,6 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		}
 	}
 
-	
-	
 	/**
 	 * Load and return the SiteNqbCellMap in the given path into the cellsStruct object 
 	 * @param filename the path of the file from which the cellsStruct is written to
@@ -758,7 +762,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		}
 	}
 
-	
+
 	private boolean getToCellStart(){
 		if(curCell==null){
 			return false;
@@ -780,7 +784,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		imp.setSlice(slice);
 		return true;
 	}
-	
+
 	private boolean getToCellEnd(){
 		if(curCell==null){
 			return false;
@@ -795,7 +799,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 			}
 		}
 		int slice=getSliceOfFrame(maxFrame);
-		
+
 		if(slice==-1){
 			IJ.showMessage("Problem getting start frame for this cell");
 			return false;
@@ -834,18 +838,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 
 	}
 
-	
-	@Override
-	public void imageOpened(ImagePlus imp) {
-		// TODO Auto-generated method stub
 
-	}
-
-	@Override
-	public void imageClosed(ImagePlus imp) {
-		// TODO Auto-generated method stub
-
-	}
 
 	@Override
 	public void imageUpdated(ImagePlus imp) {
@@ -859,7 +852,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		curCell=newCell;
 		setCellsGui();
 	}
-	
+
 	private int getSliceOfFrame(int frame){
 		Iterator<Integer> slicesIter=this.stack2frameMap.keySet().iterator();		
 		boolean found=false;
@@ -873,17 +866,6 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	}
 
 
-	@Override
-	public void keyPressed(KeyEvent key) {
-	}
-	
-
-
-	@Override
-	public void keyReleased(KeyEvent key) {
-
-
-	}
 
 	@Override
 	public void keyTyped(KeyEvent key) {
@@ -902,55 +884,6 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		}		
 	}
 
-//	void wandTrackCurCell(){
-//		//TODO - how to make it on a monitor list
-//		Roi roi= imp.getRoi();
-//		if(roi==null){
-//			return;
-//		}
-//		this.addRoiToCell(roi);
-//		if(curCell==null){
-//			IJ.showMessage("cannot track: no current cell");
-//			return;
-//		}
-//		//TODO - check about the offScreen if needed here...
-//		int x =(int) roi.getBounds().getCenterX();
-//		int y =(int) roi.getBounds().getCenterY();
-//		//TODO need to calculate nearest mask.... if want to mark it
-//		//gotNext=true;
-//		boolean gotNext=nextSlice();	
-//		while(butContMode.isSelected()){					
-//			if(!gotNext){	
-//				 drawFrame();
-//				butContMode.setSelected(false);
-//				return;
-//			}
-//			double tolerance=0;
-//			int dots=IJ.doWand(x, y, tolerance,  "8-connected" ); //looks like this returns the number of points
-////			IJ.showMessage("tracking wand dots: "+dots);
-//			if(dots==0){
-//				butContMode.setSelected(false);
-//				return;
-//			}
-//			roi= imp.getRoi();
-//			this.addRoiToCell(roi);
-//			x =(int) roi.getBounds().getCenterX();
-//			y =(int) roi.getBounds().getCenterY();
-//			//  
-//			//do what you want to do before sleeping
-//			  try {
-//				Thread.sleep(1000);
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}//sleep for 1000 ms
-//			 
-//			gotNext=nextSlice();
-//			
-//		}		
-//	}
-//	
-	
 	void wandTrackCurCell(){		
 		Roi roi= imp.getRoi();
 		if(roi==null){
@@ -963,7 +896,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		}
 		int prevFrame=this.getCurFrame();
 		boolean gotNext=nextSlice();
-		
+
 		while(butContMode.isSelected() & gotNext){	
 			gotNext=wandTrack(curCell,prevFrame);	
 			if(!gotNext){
@@ -982,13 +915,12 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		}
 
 	}		
-	
-	
+
 	void wandTrackSet(){
 		Set<Cell> missedCells=new HashSet<Cell>();
 		int prevFrame=this.getCurFrame();
 		boolean gotNext=nextSlice();		
-		
+
 		while(butContMode.isSelected()&& gotNext && missedCells.isEmpty()){
 			Iterator<Cell> citer=monitorSet.iterator();
 			while(citer.hasNext()){
@@ -1012,19 +944,18 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 			gotNext=nextSlice();			
 		}
 	}
-	
+
 	/*
 	 * wandTrack the given cell in the current frame according to the ROI of the cell in prevFrame
 	 */
 	private boolean wandTrack(Cell cell, int prevFrame){		
 		Roi roi = cell.getLocationInFrame(prevFrame).getRoi();				
 		double tolerance=0;
-				
+
 		//TODO - check about the offScreen if needed here...
 		int x =(int) roi.getBounds().getCenterX();
 		int y =(int) roi.getBounds().getCenterY();
 		int dots=IJ.doWand(x, y, tolerance,  "8-connected" ); //looks like this returns the number of points
-//		IJ.showMessage("tracking wand dots: "+dots);
 		if(dots==0){		
 			return false;
 		}
@@ -1033,26 +964,8 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		this.addRoiToCell(roi);
 		return true;
 	}
-	
-	
-	
 
-//	/**
-//	 * 
-//	 * @return Roi of the current cell in the previous slice, null if can't find this.
-//	 */
-//
-//	Roi getRoiOfPreviuosSlice(){
-//		if(curCell!=null){
-//			int curSlice=imp.getCurrentSlice();
-//			int prevFrame=this.stack2frameMap.get(curSlice-1);			
-//			Roi roi=curCell.getLocationInFrame(prevFrame);
-//			return roi;
-//		}
-//		return null;
-//	}
-
-	void createFrameTimeMapping(){
+	public void createFrameTimeMapping(){
 		PathTokens pt=new PathTokens(imp.getImageStack(),1);
 		String path=pt.getPre()+pt.getSite()+"_";
 		String dir=JoyDivision_.getFilePathDlg(2);
@@ -1071,15 +984,15 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 			int totTime=(int)(modifiedTime-init)/60000;
 			frame2timeMap.put(frameNum, totTime);
 			IJ.showMessage("file: "+fullpath+" created at: "+totTime);
-			
+
 		}
 	}
-	
+
 	/**
 	 * The imagePlus opened is taken and for each frame the relative roi from each cell is taken 
 	 * for which the mean values in the relative location in the current ImagePlus is calculated and added 
 	 */
-	void extractFluo(){
+	public void extractFluo(){
 		GenericDialog gd = new GenericDialog("YesNoCancel");
 		gd.addMessage("Is the current image contains the fluorescence wished to be extracted?");
 		gd.enableYesNoCancel();
@@ -1111,10 +1024,10 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		((PropertiesCells) cellsStruct).addProperty(fluoname);			
 		//we will go over all frames and update their ROI to be PolyProperty and hold the correct value-
 		//here- we calculate the mean fluo of the each cell in each frame
-
-		for (int curSlice=1; curSlice<=imp.getStackSize();curSlice++){
-			imp.setSlice(curSlice);
-			int curFrame=getCurFrame();
+		ImagePlus fimp=IJ.getImage();
+		for (int curSlice=1; curSlice<=fimp.getStackSize();curSlice++){
+			fimp.setSlice(curSlice);
+			int curFrame=PathTokens.getCurFrame(fimp);
 			Set<Cell> frameCells=cellsStruct.getCellsInFrame(curFrame);
 			if(frameCells!=null){
 				Iterator<Cell> citer=frameCells.iterator();
@@ -1123,18 +1036,15 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 					PolyProperty curRoi=curCell.getLocationInFrame(curFrame);								
 					//find the mean of this Roi
 					imp.setRoi(curRoi.getRoi());
-					ImageStatistics stats= ImageStatistics.getStatistics(imp.getProcessor(), Measurements.MEAN,imp.getCalibration());
+					ImageStatistics stats= ImageStatistics.getStatistics(fimp.getProcessor(), Measurements.MEAN,fimp.getCalibration());
 					PropertiesCells propCells=(PropertiesCells)cellsStruct;
 					int propId=propCells.getPropertyId(fluoname);
 					curRoi.setProperty(propId, stats.mean);
-					curCell.addLocation(curFrame, curRoi); 
-					IJ.showMessage("current Cell roi: "+curRoi);
+					curCell.addLocation(curFrame, curRoi);				
 				}
-			}
-		}
-		IJ.showMessage("current Cells: "+cellsStruct);
+			}   
+		}		
 	}
-
 
 	private void addToMonitorSet(){
 		monitorSet.add(curCell);
@@ -1145,16 +1055,38 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	private void clearMonitorSet(){
 		monitorSet.clear();
 	}
-	
-private boolean nextSlice(){
-	boolean res=false;
-	int curSlice=imp.getCurrentSlice();
-	if(curSlice<imp.getImageStackSize()){
-		imp.setSlice(++curSlice);
-		res=true;
+
+	private boolean nextSlice(){
+		boolean res=false;
+		int curSlice=imp.getCurrentSlice();
+		if(curSlice<imp.getImageStackSize()){
+			imp.setSlice(++curSlice);
+			res=true;
+		}
+		return res;
 	}
-	return res;
-}
+
+	@Override
+	public void keyPressed(KeyEvent key) {
+	}
+
+
+
+	@Override
+	public void keyReleased(KeyEvent key) {
+
+
+	}
+	@Override
+	public void imageOpened(ImagePlus imp) {
+	}
+
+	@Override
+	public void imageClosed(ImagePlus imp) {
+		// TODO Auto-generated method stub
+
+	}
+
 
 }
 //public void drawFrame(){

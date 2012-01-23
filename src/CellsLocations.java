@@ -26,9 +26,10 @@ public class CellsLocations implements Serializable {
 		
 	}
 
-	public Map<Integer,PolyProperty> addLocationToCell(Cell cell, Integer frame, PolyProperty proi){
-		Polygon poly=proi.getRoi().getPolygon();
-		proi=new PolyProperty(poly,Roi.FREEROI);		
+	public Map<Integer,PolyProperty> addLocationToCell(Cell cell, Integer frame, PolyProperty roi){
+		Polygon poly=roi.getRoi().getPolygon();		
+		PolyProperty proi=new PolyProperty(poly,Roi.FREEROI);
+		proi.propId2Value=roi.propId2Value;
 		Set<Cell> cells=byFrame.get(frame);
 		if(cells ==null){
 			cells=new HashSet<Cell>();

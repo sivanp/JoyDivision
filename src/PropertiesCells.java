@@ -50,6 +50,7 @@ public class PropertiesCells extends Cells {
 				 }
 			 }
 		 }
+		 maxFluoId++;
 		 return addProperty(maxFluoId,name);
 	 }
 	 

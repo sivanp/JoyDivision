@@ -3,7 +3,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
 import ij.gui.PolygonRoi;
 
 
@@ -51,6 +50,28 @@ public class PolyProperty implements Serializable{
 			res+=" prop"+curId+" :"+propId2Value.get(curId);
 		}				
 		return res;
+	}
+	
+	
+	
+	public String roiToWriter(){
+		String res="[";
+		int[] xpixels=roi.getPolygon().xpoints;
+		int[] ypixels=roi.getPolygon().ypoints;
+		for (int i=0; i<xpixels.length;i++){
+			res+=xpixels[i]+","+ypixels[i]+";";
+		}
+		res+="]";
+		return res;
+	}
+	
+	public String propertyToWriter(int propId){
+		
+		Double val=propId2Value.get(propId);
+		if(val==null){
+			return null;
+		}		
+		return propId+"="+val.toString();
 	}
 
 }
