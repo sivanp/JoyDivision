@@ -55,13 +55,12 @@ public class PolyProperty implements Serializable{
 	
 	
 	public String roiToWriter(){
-		String res="[";
+		String res="";
 		int[] xpixels=roi.getPolygon().xpoints;
 		int[] ypixels=roi.getPolygon().ypoints;
 		for (int i=0; i<xpixels.length;i++){
 			res+=xpixels[i]+","+ypixels[i]+";";
-		}
-		res+="]";
+		}		
 		return res;
 	}
 	
