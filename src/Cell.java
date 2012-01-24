@@ -186,6 +186,7 @@ public class Cell implements Serializable
 	}
 
 	public PolyProperty getLocationInFrame(int frame){
+		
 		return parentCells.getCl().getCellLocationInFrame(this, frame);
 	}
 
@@ -228,9 +229,9 @@ public class Cell implements Serializable
 			int rank=1;
 			Set<Cell> siblings=gmom.getDaughters();
 			Iterator<Cell> siter=siblings.iterator();
-			while(siter.hasNext()){
+			while(siter.hasNext()){ 
 				Cell sis=siter.next();
-				if(sis.getId()>mom.getId()){
+				if(sis.getId()<mom.getId()){
 					rank++;
 				}
 			}

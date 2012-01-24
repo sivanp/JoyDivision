@@ -124,11 +124,17 @@ public class CellParents implements Serializable
 		HashSet<Cell> moms=byChild.get(daughter);
 		if(moms!=null){
 			moms.remove(mom);
+			if(moms.isEmpty()){
+				moms=null;
+			}
 			byChild.put(daughter, moms);
 		}		
 		HashSet<Cell> kids=byParent.get(mom);
 		if(kids!=null){
 			res=kids.remove(daughter);
+			if(kids.isEmpty()){
+				kids=null;
+			}
 			byParent.put(mom, kids);
 		}			
 		return res;

@@ -45,7 +45,10 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	Set<Cell> monitorSet;
 	Cells cellsStruct;
 	Font font=new Font("Book Antiqua", Font.PLAIN, 10);
-
+	int waitmill=1000;
+	int allowedDist=50;
+	
+	
 	//GUI Stuff
 	JPanel panel;
 	JFrame frame;
@@ -77,7 +80,10 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	JMenuItem menuItemClearSet;
 	JMenuItem menuItemGetTimes;
 	JMenuItem menuItemExtractFluo;
-
+	JMenu propertiesMenu;
+	JMenuItem menuItemChangeWait;
+	JMenuItem menuItemChangeAllowedDist;
+	
 	boolean mouseListening=false;
 
 	public void run(ImageProcessor ip) {
@@ -194,8 +200,17 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		menuItemExtractFluo.addActionListener(this);
 		viewMenu.add(menuItemExtractFluo);
 
+		propertiesMenu=new JMenu("Properties");
+		menuBar.add(propertiesMenu);
 
+		menuItemChangeWait=new JMenuItem("Set wait time");
+		menuItemChangeWait.addActionListener(this);
+		propertiesMenu.add(menuItemChangeWait);
 
+		menuItemChangeAllowedDist= new JMenuItem("Set allowed distance");
+		menuItemChangeAllowedDist.addActionListener(this);
+		propertiesMenu.add(menuItemChangeAllowedDist);
+		
 		c.weightx=0.5;
 		c.gridx=0;
 		c.gridy=0;
@@ -516,21 +531,34 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 				IJ.showMessage("cannot delete: no current cell");
 				return;
 			}
-			GenericDialog gd=new GenericDialog("Delte cell from frame");
-			gd.addNumericField("What frame to start earsing from?", -1, 4);
+			GenericDialog gd= new GenericDialog("Delete cell in current frame or from a given frame forward?");
+			gd.addMessage("Press yes to delete in current frame\n no to delete from a specific frame forward\n cancel to abort?");
+			gd.enableYesNoCancel();
 			gd.showDialog();
-			Integer frame=(int)gd.getNextNumber();
-			Integer slice=this.getSliceOfFrame(frame);
-			if(slice==null){
+			if (gd.wasCanceled()){
 				return;
 			}
-			boolean removed=curCell.deleteLocation(frame);			
-			while(removed){				
-				frame=this.stack2frameMap.get(++slice);
-				if(frame==null){
+			else if (gd.wasOKed()){
+				int frame=getCurFrame();
+				curCell.deleteLocation(frame);
+			}
+			else{
+				gd=new GenericDialog("Delte cell from frame");
+				gd.addNumericField("What frame to start earsing from?", -1, 4);
+				gd.showDialog();
+				Integer frame=(int)gd.getNextNumber();
+				Integer slice=this.getSliceOfFrame(frame);
+				if(slice==null){
 					return;
 				}
-				removed=curCell.deleteLocation(frame);				
+				boolean removed=curCell.deleteLocation(frame);			
+				while(removed){				
+					frame=this.stack2frameMap.get(++slice);
+					if(frame==null){
+						return;
+					}
+					removed=curCell.deleteLocation(frame);				
+				}
 			}
 		}
 
@@ -576,7 +604,8 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 						}
 					}
 				};
-				queryThread.start();				  
+				queryThread.start();
+				
 			}
 
 		}	
@@ -609,6 +638,19 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		else if(e.getSource()==menuItemExtractFluo){
 			extractFluo();
 		}
+		else if(e.getSource()==menuItemChangeWait){
+			GenericDialog gd=new GenericDialog("Change ContMode wait time");
+			gd.addNumericField("Enter new wait in millisecond?", waitmill, 4);
+			gd.showDialog();
+			waitmill=(int)gd.getNextNumber();		
+		}
+		else if(e.getSource()==menuItemChangeAllowedDist){
+			GenericDialog gd=new GenericDialog("Change allowed distance of a cell between consecutive frames");
+			gd.addNumericField("Enter new distance:", allowedDist , 4);
+			gd.showDialog();
+			allowedDist=(int)gd.getNextNumber();		
+		}
+		
 		drawFrame();
 	}
 	public void itemStateChanged(ItemEvent e){
@@ -643,7 +685,10 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 			while(iter.hasNext()){
 				Cell curCell=iter.next();			
 				Roi mroi=(Roi) curCell.getLocationInFrame(frame).getRoi().clone();
-				if(monitorSet.contains(curCell)){
+				if(this.curCell==curCell){
+					mroi.setStrokeColor(Color.MAGENTA);
+				}
+				else if(monitorSet.contains(curCell)){
 					mroi.setStrokeColor(Color.CYAN);
 				}
 				else{
@@ -833,6 +878,33 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 			Cell newCell= cellsStruct.addNewCell();	
 			this.updateCurCell(newCell);
 		}
+		else{// check if there's a current or previous mark of this cell if so and its far ask the user what to do
+			PolyProperty polyprop=curCell.getLocationInFrame(frame);
+			if(polyprop==null && slice>1){//look at the previous frame
+				filename=stack.getSliceLabel(slice-1);
+				pt=new PathTokens(filename);
+				int prevframe=pt.frame;
+				polyprop=curCell.getLocationInFrame(prevframe);
+			}
+			if(polyprop!=null){
+				double dist=Math.sqrt(Math.pow((polyprop.getRoi().getBounds().x-roi.getBounds().x),2)+Math.pow((polyprop.getRoi().getBounds().y-roi.getBounds().y),2));
+				if(dist>allowedDist){
+					GenericDialog gd = new GenericDialog("Found ROI too far");
+					gd.addMessage("press yes to counitnue, no for starting a new cell, cancel to abort");
+					gd.enableYesNoCancel();
+					gd.showDialog();
+					if (gd.wasCanceled()){
+						return;
+					}			 
+					else if(!gd.wasOKed()){
+						Cell newCell= cellsStruct.addNewCell();	
+						updateCurCell(newCell);
+					}
+				}
+			}
+			
+			
+		}
 		//To do check distance from previous and possible current
 		curCell.addLocation(frame, roi);
 
@@ -887,7 +959,8 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	void wandTrackCurCell(){		
 		Roi roi= imp.getRoi();
 		if(roi==null){
-			return;
+			butContMode.setSelected(false);
+			return;			
 		}
 		this.addRoiToCell(roi);
 		if(curCell==null){
@@ -901,11 +974,14 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 			gotNext=wandTrack(curCell,prevFrame);	
 			if(!gotNext){
 				butContMode.setSelected(false);
+				drawFrame();
+				this.setCellsGui();
 				return;			
 			}
 			drawFrame();
+			this.setCellsGui();
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(waitmill);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -913,6 +989,9 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 			prevFrame=this.getCurFrame();
 			gotNext=nextSlice();
 		}
+		butContMode.setSelected(false);
+		drawFrame();
+		this.setCellsGui();
 
 	}		
 
@@ -930,26 +1009,36 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 				}				
 			}
 			drawFrame();
+			this.setCellsGui();
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(waitmill);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			if(!missedCells.isEmpty()){
 				butContMode.setSelected(false);
+				drawFrame();
+				this.setCellsGui();
 				return;	
 			}
 			prevFrame=this.getCurFrame();
 			gotNext=nextSlice();			
 		}
+		butContMode.setSelected(false);
+		drawFrame();
+		this.setCellsGui();
 	}
 
 	/*
 	 * wandTrack the given cell in the current frame according to the ROI of the cell in prevFrame
 	 */
-	private boolean wandTrack(Cell cell, int prevFrame){		
-		Roi roi = cell.getLocationInFrame(prevFrame).getRoi();				
+	private boolean wandTrack(Cell cell, int prevFrame){
+		PolyProperty prevPoly=cell.getLocationInFrame(prevFrame);
+		if(prevPoly==null){
+			return false;
+		}
+		Roi roi = prevPoly.getRoi();				
 		double tolerance=0;
 
 		//TODO - check about the offScreen if needed here...
@@ -960,7 +1049,19 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 			return false;
 		}
 		curCell=cell;
+		Roi prevRoi=roi;
 		roi= imp.getRoi();
+		double dist=Math.sqrt(Math.pow((prevRoi.getBounds().x-roi.getBounds().x),2)+Math.pow((prevRoi.getBounds().y-roi.getBounds().y),2));
+		if(dist>allowedDist){
+			GenericDialog gd = new GenericDialog("YesNoCancel");
+			gd.addMessage("Found ROI too far- counitnue?");
+			gd.enableYesNoCancel();
+			gd.showDialog();
+			if (gd.wasCanceled()||!gd.wasOKed()){
+				return false;
+			}			 
+		}
+		//check if this roi is not too far from the previous
 		this.addRoiToCell(roi);
 		return true;
 	}
@@ -1035,7 +1136,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 					Cell curCell=citer.next();
 					PolyProperty curRoi=curCell.getLocationInFrame(curFrame);								
 					//find the mean of this Roi
-					imp.setRoi(curRoi.getRoi());
+					fimp.setRoi(curRoi.getRoi());
 					ImageStatistics stats= ImageStatistics.getStatistics(fimp.getProcessor(), Measurements.MEAN,fimp.getCalibration());
 					PropertiesCells propCells=(PropertiesCells)cellsStruct;
 					int propId=propCells.getPropertyId(fluoname);
@@ -1047,7 +1148,9 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	}
 
 	private void addToMonitorSet(){
-		monitorSet.add(curCell);
+		if(curCell!=null){
+			monitorSet.add(curCell);
+		}
 	}
 	private void removeFromMonitorSet(){
 		monitorSet.remove(curCell);
