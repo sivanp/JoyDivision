@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
+
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import java.util.HashSet;
@@ -12,12 +15,12 @@ import java.util.HashSet;
 public class CellsLocations implements Serializable {
 	
 	private static final long serialVersionUID = 3641410585003171843L;
-	Map<Integer,Set<Cell>> byFrame;
-	Map<Cell, Map<Integer,PolyProperty>> byCell;
+	SortedMap<Integer,Set<Cell>> byFrame;
+	Map<Cell, SortedMap<Integer,PolyProperty>> byCell;
 	
 	public CellsLocations(){
-		byCell= new HashMap<Cell, Map<Integer,PolyProperty>>();
-		byFrame=new HashMap<Integer,Set<Cell>>();
+		byCell= new HashMap<Cell, SortedMap<Integer,PolyProperty>>();
+		byFrame=new TreeMap<Integer,Set<Cell>>();
 	}
 	
 	public void clear() {
@@ -37,9 +40,9 @@ public class CellsLocations implements Serializable {
 		cells.add(cell);
 		byFrame.put(frame, cells);
 		
-		Map<Integer, PolyProperty> locs=byCell.get(cell);
+		SortedMap<Integer, PolyProperty> locs=byCell.get(cell);
 		if(locs==null){
-			locs=new HashMap<Integer,PolyProperty>();
+			locs=new TreeMap<Integer,PolyProperty>();
 		}
 		locs.put(frame, proi);
 		return this.put(cell, locs);
@@ -53,7 +56,7 @@ public class CellsLocations implements Serializable {
 	}
 	
 	
-	public Map<Integer, PolyProperty> put(Cell cell, Map<Integer, PolyProperty> value) 
+	public Map<Integer, PolyProperty> put(Cell cell, SortedMap<Integer, PolyProperty> value) 
 	{
 		Set<Integer> frames=value.keySet();
 		Iterator<Integer> fiter=frames.iterator();
@@ -113,7 +116,7 @@ public class CellsLocations implements Serializable {
 		return cellsInFrame.get(cell);
 	}
 	public Set<Integer> getFrames(Cell cell) {
-		Map<Integer,PolyProperty> locs=byCell.get(cell);
+		SortedMap<Integer,PolyProperty> locs=byCell.get(cell);
 		if(locs==null){
 			return null;
 		}
