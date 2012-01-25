@@ -113,6 +113,9 @@ public class CellsLocations implements Serializable {
 	 */
 	public PolyProperty getCellLocationInFrame(Cell cell, int frame){
 		Map<Cell, PolyProperty> cellsInFrame=getCellsByFrame(frame);
+		if(cellsInFrame==null){
+			return null;
+		}
 		return cellsInFrame.get(cell);
 	}
 	public Set<Integer> getFrames(Cell cell) {
