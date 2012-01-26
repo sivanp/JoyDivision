@@ -34,7 +34,7 @@ public class OfTrack_ extends  MTrack3_
 	@Override
 	public void run(ImageProcessor ip) 
 	{
-		Vector<Vector<Particle>> theTracks= track(imp, 50, 800,(float) 10.0,null ,null) ;
+		Vector<Vector<Particle>> theTracks= track(imp, 50, 800,(float) 20.0,null ,null) ;
 
 		cellsStruct = new Cells();
 
