@@ -36,7 +36,7 @@ import javax.swing.*;
 
 public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionListener, ItemListener, ImageListener, KeyListener  {
 	ImagePlus imp;	
-	ImagePlus origImp;
+//	ImagePlus origImp;
 	SortedMap<Integer, Integer> stack2frameMap;
 	SortedMap<Integer, Integer> frame2timeMap;
 	ImagePlus newImp;
@@ -372,7 +372,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 
 	public int setup(String arg, ImagePlus imp) {		
 		this.imp = imp;
-		this.origImp=imp.duplicate();		
+//		this.origImp=imp.duplicate();		
 		stack2frameMap=new TreeMap<Integer, Integer>();
 		frame2timeMap=new TreeMap<Integer, Integer>();
 		cellsStruct=new Cells();

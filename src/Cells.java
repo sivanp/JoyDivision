@@ -150,9 +150,13 @@ public class Cells extends Hashtable<Integer, Cell> implements Serializable
 	 */
 	public Cell overlapingLocation(Roi roi, int frame, double overlapingRatio){		
 		Set<Cell> cellsInFrame=this.getCellsInFrame(frame);
+		if(cellsInFrame==null){
+			return null;
+		}
 		Rectangle rect=roi.getBounds();
 		double roiArea=rect.getWidth()*rect.getHeight();
 		boolean overlaping=false;
+		
 		for(Cell c: cellsInFrame){
 			Roi croi=c.getLocationInFrame(frame).getRoi();			
 			double overlap=overlap(roi,croi);

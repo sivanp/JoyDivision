@@ -31,7 +31,7 @@ public class CellsLocations implements Serializable {
 
 	public Map<Integer,PolyProperty> addLocationToCell(Cell cell, Integer frame, PolyProperty roi){
 		Polygon poly=roi.getRoi().getPolygon();		
-		PolyProperty proi=new PolyProperty(poly,Roi.FREEROI);
+		PolyProperty proi=new PolyProperty(poly);
 		proi.propId2Value=roi.propId2Value;
 		Set<Cell> cells=byFrame.get(frame);
 		if(cells ==null){
@@ -50,7 +50,7 @@ public class CellsLocations implements Serializable {
 	
 	public Map<Integer,PolyProperty> addLocationToCell(Cell cell, Integer frame, Roi roi){
 		Polygon poly=roi.getPolygon();
-		PolyProperty proi=new PolyProperty(poly,Roi.FREEROI);		
+		PolyProperty proi=new PolyProperty(poly);		
 		return this.addLocationToCell(cell, frame, proi);
 		
 	}

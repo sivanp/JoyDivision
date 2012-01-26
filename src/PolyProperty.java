@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import ij.gui.PolygonRoi;
+import ij.gui.Roi;
 
 
 public class PolyProperty implements Serializable{
@@ -13,24 +14,24 @@ public class PolyProperty implements Serializable{
 	 */
 	private static final long serialVersionUID = 1L;
 	protected Map<Integer, Double> propId2Value;
-	protected PolygonRoi roi;
+	protected Polygon roi;
 	
 
-	public PolyProperty(Polygon p, int type) {
-		roi=new PolygonRoi(p, type);		
+	public PolyProperty(Polygon p) {
+		roi=new Polygon(p.xpoints, p.ypoints,p.npoints);		
 		propId2Value=new HashMap<Integer,Double>();
 	}
 	
-	public PolyProperty(PolygonRoi roi){
-		this(roi.getPolygon(), roi.getType());		
+	public PolyProperty(Roi roi){
+		this(roi.getPolygon());		
 	}
 	
 	public PolygonRoi getRoi() {
-		return roi;
+		return new PolygonRoi(roi, Roi.FREEROI);
 	}
 
-	public void setRoi(PolygonRoi roi) {
-		this.roi = roi;
+	public void setRoi(Roi roi) {
+		this.roi = roi.getPolygon();
 	}
 	
 	public Double setProperty(int propId, Double value){
@@ -56,8 +57,8 @@ public class PolyProperty implements Serializable{
 	
 	public String roiToWriter(){
 		String res="";
-		int[] xpixels=roi.getPolygon().xpoints;
-		int[] ypixels=roi.getPolygon().ypoints;
+		int[] xpixels=roi.xpoints;
+		int[] ypixels=roi.ypoints;
 		for (int i=0; i<xpixels.length;i++){
 			res+=xpixels[i]+","+ypixels[i]+";";
 		}		
