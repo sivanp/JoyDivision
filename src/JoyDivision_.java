@@ -1,8 +1,10 @@
 import ij.IJ;
 import ij.ImagePlus;
 
+import javax.print.attribute.standard.JobName;
 import javax.swing.JFrame;
 import java.awt.event.*;
+import java.awt.geom.Rectangle2D;
 
 import ij.gui.*;
 import ij.io.OpenDialog;
@@ -45,8 +47,10 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	Set<Cell> monitorSet;
 	Cells cellsStruct;
 	Font font=new Font("Book Antiqua", Font.PLAIN, 10);
-	int waitmill=1000;
-	int allowedDist=50;
+	int waitmill=200;
+	int allowedDist=35;
+	double overlapingRatio=0.5;
+	double consecAreaRatio=0.7;
 	
 	
 	//GUI Stuff
@@ -75,8 +79,10 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	JMenuItem menuItemExportStruct;
 	JMenu viewMenu;
 	JCheckBoxMenuItem menuItemDisplayNames;
+	JCheckBoxMenuItem menuItemDisplayRois;
 	JMenuItem menuItemAdd2Set;
 	JMenuItem menuItemRemoveFromSet;
+	JMenuItem menuItemShowSet;
 	JMenuItem menuItemClearSet;
 	JMenuItem menuItemGetTimes;
 	JMenuItem menuItemExtractFluo;
@@ -174,11 +180,16 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		
 		viewMenu=new JMenu("Edit&View");
 		menuBar.add(viewMenu);
+		
 		menuItemDisplayNames= new JCheckBoxMenuItem("display names");
 		menuItemDisplayNames.doClick();
 		menuItemDisplayNames.addActionListener(this);
-
 		viewMenu.add(menuItemDisplayNames);
+		
+		menuItemDisplayRois= new JCheckBoxMenuItem("display rois");
+		menuItemDisplayRois.doClick();
+		menuItemDisplayRois.addActionListener(this);
+		viewMenu.add(menuItemDisplayRois);
 
 		menuItemAdd2Set=new JMenuItem("Add to monitor set");
 		menuItemAdd2Set.addActionListener(this);
@@ -187,7 +198,12 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		menuItemRemoveFromSet= new JMenuItem("Remove from monitor set");
 		menuItemRemoveFromSet.addActionListener(this);
 		viewMenu.add(menuItemRemoveFromSet);
-
+		
+		menuItemShowSet = new JMenuItem("show cells ids in monitor set");
+		menuItemShowSet.addActionListener(this);
+		viewMenu.add(menuItemShowSet);
+		
+		
 		menuItemClearSet=new JMenuItem("Clear monitor set");
 		menuItemClearSet.addActionListener(this);
 		viewMenu.add(menuItemClearSet);
@@ -523,6 +539,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 				return;
 			}
 			cellsStruct.remove(curCell);
+			monitorSet.remove(curCell);
 			this.updateCurCell(null);	
 		}
 
@@ -544,7 +561,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 			}
 			else{
 				gd=new GenericDialog("Delte cell from frame");
-				gd.addNumericField("What frame to start earsing from?", -1, 4);
+				gd.addNumericField("What frame to start earsing from?", getCurFrame(), 0);
 				gd.showDialog();
 				Integer frame=(int)gd.getNextNumber();
 				Integer slice=this.getSliceOfFrame(frame);
@@ -631,6 +648,16 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		else if(e.getSource()==menuItemClearSet){
 			this.clearMonitorSet();
 		}
+		
+		else if(e.getSource()==menuItemShowSet){
+			String res="cells in set are: ";
+			for(Cell cell: monitorSet){
+				res+=cell.getId()+" ";
+			}
+			IJ.showMessage(res);
+			
+			
+		}
 		else if(e.getSource()==menuItemGetTimes){
 			this.createFrameTimeMapping();
 		}
@@ -675,6 +702,8 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	public void drawFrame(){
 		//TODO deal with when the stack is virtual
 		int stackFrame=imp.getCurrentSlice();	
+		
+		
 		Overlay ov = new Overlay();
 
 		//look for all Rois for this frame
@@ -703,8 +732,14 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 			ov.setLabelFont(font);
 			ov.setLabelColor(Color.GREEN);
 			ov.drawNames(true);
+		}	
+		if(!menuItemDisplayRois.isSelected()){
+			imp.setOverlay(null);
 		}
-		imp.setOverlay(ov);
+		else{
+			imp.setOverlay(ov);
+		}
+		
 		imp.updateAndDraw();
 	}
 
@@ -953,7 +988,21 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		else if(key.getKeyChar()=='a'){
 			this.addRoiToCell(imp.getRoi());
 			drawFrame();
-		}		
+		}
+		else if(key.getKeyChar()=='g'){
+			mouseListening=true;
+		}	
+		else if(key.getKeyChar()=='l'){
+			this.addToMonitorSet();
+		}	
+		else if(key.getKeyChar()=='r'){
+			this.removeFromMonitorSet();
+		}	
+		else if(key.getKeyChar()=='c'){
+			this.clearMonitorSet();
+		}
+		drawFrame();
+		this.setCellsGui();
 	}
 
 	void wandTrackCurCell(){		
@@ -1019,6 +1068,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 			if(!missedCells.isEmpty()){
 				butContMode.setSelected(false);
 				drawFrame();
+				this.curCell=missedCells.iterator().next();
 				this.setCellsGui();
 				return;	
 			}
@@ -1026,6 +1076,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 			gotNext=nextSlice();			
 		}
 		butContMode.setSelected(false);
+	
 		drawFrame();
 		this.setCellsGui();
 	}
@@ -1049,6 +1100,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 			return false;
 		}
 		curCell=cell;
+		//check if this roi is not too far from the previous
 		Roi prevRoi=roi;
 		roi= imp.getRoi();
 		double dist=Math.sqrt(Math.pow((prevRoi.getBounds().x-roi.getBounds().x),2)+Math.pow((prevRoi.getBounds().y-roi.getBounds().y),2));
@@ -1061,11 +1113,29 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 				return false;
 			}			 
 		}
-		//check if this roi is not too far from the previous
+		//check if this roi is much smaller than the last frame- indicating a problem with threshold or a division
+		double prevArea=prevRoi.getBounds().getHeight()*prevRoi.getBounds().getWidth();
+		double roiArea=roi.getBounds().getHeight()*roi.getBounds().getWidth();
+		if(roiArea/prevArea<consecAreaRatio){
+			return false;
+		}
+		
+		//check if this roi is not allready overlapping with an existing cell		
+		int frame=PathTokens.getCurFrame(imp);		
+		Cell overlaping=cellsStruct.overlapingLocation(roi, frame, overlapingRatio);
+		if(overlaping!=null){
+			if(cell.getId()!=overlaping.getId())
+				return false;
+		}
 		this.addRoiToCell(roi);
 		return true;
 	}
 
+	 
+ 
+	
+	
+	
 	public void createFrameTimeMapping(){
 		PathTokens pt=new PathTokens(imp.getImageStack(),1);
 		String path=pt.getPre()+pt.getSite()+"_";
