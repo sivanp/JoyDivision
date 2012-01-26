@@ -1,5 +1,7 @@
 import ij.gui.Roi;
 
+import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
@@ -137,6 +139,45 @@ public class Cells extends Hashtable<Integer, Cell> implements Serializable
 		cl.swapCellLocations(cell1, cell2,frame);
 		
 	}
+	
+	/**
+	 * Returns the first cell found that has an roi in the given frame which overlap the given roi, 
+	 * such that the overlapping area is at least the ovelapingRatio of the given roi. Null if no such cell is found. 
+	 * @param roi
+	 * @param frame
+	 * @param overlapingRatio
+	 * @return
+	 */
+	public Cell overlapingLocation(Roi roi, int frame, double overlapingRatio){		
+		Set<Cell> cellsInFrame=this.getCellsInFrame(frame);
+		if(cellsInFrame==null){
+			return null;
+		}
+		Rectangle rect=roi.getBounds();
+		double roiArea=rect.getWidth()*rect.getHeight();
+		boolean overlaping=false;
+		
+		for(Cell c: cellsInFrame){
+			Roi croi=c.getLocationInFrame(frame).getRoi();			
+			double overlap=overlap(roi,croi);
+			if(overlap/roiArea>overlapingRatio){
+				return c;				
+			}			
+		}
+		return null;
+	}
+	
+	private double overlap(Roi roi1, Roi roi2){
+		 double res=0;
+		 Rectangle r1=roi1.getBounds();
+		 Rectangle r2=roi2.getBounds();
+		 Rectangle2D intersect=r1.createIntersection(r2);
+		 if(intersect.getWidth()>0&& intersect.getHeight()>0){
+			 res=intersect.getWidth()*intersect.getHeight();
+		 }
+		 return res;
+	 }
+		
 	
 	
 
