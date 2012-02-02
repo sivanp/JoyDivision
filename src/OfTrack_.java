@@ -5,6 +5,7 @@ import ij.gui.Roi;
 import ij.io.SaveDialog;
 import ij.measure.Measurements;
 import ij.measure.ResultsTable;
+import ij.plugin.Thresholder;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 
@@ -35,14 +36,13 @@ public class OfTrack_ extends  MTrack3_
 	public void run(ImageProcessor ip) 
 	{
 		Vector<Vector<Particle>> theTracks= track(imp, 50, 800,(float) 20.0,null ,null) ;
-
+		 IJ.setAutoThreshold(imp, "Default");		
 		cellsStruct = new Cells();
 
 		mapFrameSlice = getFrameSliceMap();
 
 		ResultsTable positionTable = new ResultsTable();
-
-
+		
 		for(int i = 0; i < theTracks.size(); i++)
 		{
 
@@ -75,15 +75,17 @@ public class OfTrack_ extends  MTrack3_
 			}
 		}
 		positionTable.show("Particle positions");
-
+		IJ.showStatus("starting to look for mommies");
 		imp.setSlice(1);
 		int firstFrame=PathTokens.getCurFrame(imp);
 		// find Cells starting not in the first frame.			
 		Set<Integer> cellsSet=cellsStruct.keySet();
 		int[] cellIds = new int[cellsSet.size()];
 		int i=0;
+		
 		for (Integer cellId:cellsSet )
 		{
+			IJ.showStatus("cell id: "+cellIds[i]);
 			cellIds[i] = cellId.intValue();
 			i++;
 		}

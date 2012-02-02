@@ -52,6 +52,7 @@ public class CellParents implements Serializable
 	 * @param daughter
 	 * @return HashSet of all the children associated with the given key (parent id)
 	 */
+	//TODO update so that mother could not be added if its the same as daughter or a descendant of daughter
 	public HashSet<Cell> put(Cell mom, Cell daughter) 
 	{
 		HashSet<Cell> parents=byChild.get(daughter);

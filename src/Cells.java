@@ -137,8 +137,91 @@ public class Cells extends Hashtable<Integer, Cell> implements Serializable
 	}
 	public void swapCellLocations(Cell cell1, Cell cell2, Integer frame) {
 		cl.swapCellLocations(cell1, cell2,frame);
+		//check if cells have been removed from all their locations
+		Set<Integer> frames=cl.getFrames(cell1);
+		boolean cellDeleted=false;
+		if(frames==null){
+			cellDeleted=true;
+			swapDaughters(cell2, cell1, 1);
+			moveMothers(cell1,cell2);
+			super.remove(cell1.getId());
+			
+		}
+		frames=cl.getFrames(cell2);
+		if(frames==null){
+			if(!cellDeleted){
+				swapDaughters(cell1, cell2, 1);
+			}
+
+			cellDeleted=true;
+
+			moveMothers(cell2,cell1);
+			super.remove(cell2.getId());
+		}
+		if(!cellDeleted){
+			swapDaughters(cell1,cell2,0);
+		}
+		//now check if need to update daughters and mothers of these cells
 		
 	}
+	
+	//move mothers of deletedCell to swapedCell.
+	private void moveMothers(Cell deletedcell, Cell swapedCell){
+		Set<Cell> moms= cp.getByChild(deletedcell);
+		if(moms==null){
+			return;
+		}
+		Iterator<Cell> iter=moms.iterator();
+		while(iter.hasNext()){
+			Cell mom=iter.next();
+			swapedCell.addMother(mom);			
+		}
+		cp.removeCell(deletedcell);		
+	}
+	
+	//swapping daughters.  if type==0 swap, if type ==1 move cell2 daughters to cell1.
+	private void swapDaughters(Cell cell1, Cell cell2, int type){
+		Set<Cell> daughts1= cp.getByParent(cell1);
+		Set<Cell> daughts2= cp.getByParent(cell2);
+		Set<Cell> newDaughts1 = new HashSet<Cell>();
+		Set<Cell> newDaughts2 = new HashSet<Cell>();
+		if(daughts1!=null && type==0){ //copy daughts1 to newDaughts2 and remove all
+			Iterator<Cell> iter1=daughts1.iterator();
+			while(iter1.hasNext()){
+				Cell cell=iter1.next();
+				newDaughts2.add(cell);
+			}
+			iter1=newDaughts2.iterator();
+			while(iter1.hasNext()){
+				Cell cell=iter1.next();
+				cp.removeMomDaughter(cell1, cell);
+			}
+		}
+		if(daughts2!=null){
+			Iterator<Cell> iter2=daughts2.iterator();
+			while(iter2.hasNext()){
+				Cell cell=iter2.next();
+				newDaughts1.add(cell);
+			}
+			iter2=newDaughts1.iterator();
+			while(iter2.hasNext()){
+				Cell cell=iter2.next();
+				cp.removeMomDaughter(cell2,cell);
+			}		
+		}
+		Iterator<Cell> iter1= newDaughts1.iterator();
+		while(iter1.hasNext()){
+			Cell cell=iter1.next();
+			cell1.addDaughter(cell);
+		}
+		Iterator<Cell> iter2= newDaughts2.iterator();
+		while(iter2.hasNext()){
+			Cell cell=iter2.next();
+			cell2.addDaughter(cell);
+		}
+		
+	}
+	
 	
 	/**
 	 * Returns the first cell found that has an roi in the given frame which overlap the given roi, 
