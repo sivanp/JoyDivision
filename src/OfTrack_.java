@@ -100,8 +100,15 @@ public class OfTrack_ extends  MTrack3_
 
 
 		SaveDialog sd = new SaveDialog("Save cell structure", "cell Struct", "");
-		String name = sd.getFileName();
-		saveCellsStruct(name);
+		
+		  
+		    String dir=sd.getDirectory();
+		    String name=sd.getFileName();
+		    if(name==null)
+		        return;
+		   String path = dir + name;
+		    
+		    saveCellsStruct(path);
 
 	}
 
