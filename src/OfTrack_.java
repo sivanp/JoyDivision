@@ -206,7 +206,7 @@ public class OfTrack_ extends  MTrack3_
 		try{
 			fos = new FileOutputStream(filename);
 			out = new ObjectOutputStream(fos);
-			out.writeObject(cellsStruct);
+			out.writeObject(cellsStruct);		
 			out.close();
 		}
 		catch(IOException ex)

@@ -126,6 +126,23 @@ public class CellsLocations implements Serializable {
 		return locs.keySet();
 		
 	}
+	
+	public int getMinFrame(Cell cell){
+		SortedMap<Integer,PolyProperty> locs=byCell.get(cell);
+		if(locs==null){
+			return -1;
+		}
+		return locs.firstKey();
+	}
+	
+	public int getMaxFrame(Cell cell){
+		SortedMap<Integer,PolyProperty> locs=byCell.get(cell);
+		if(locs==null){
+			return -1;
+		}
+		return locs.lastKey();
+	}
+
 
 	/**
 	 * Remove the cell location from this structure

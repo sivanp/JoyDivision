@@ -75,19 +75,36 @@ public class Cell implements Serializable
 	}
 
 	public Set<Integer> getFrames(){
-//		CellLocations locs=
 		return parentCells.getCl().getFrames(this);
 	}
 
 
+	
+	/**
+	 * 
+	 * @return the Set of daughters. If no daughters of this cells exists returns null
+	 */
 	public Set<Cell> getDaughters()
 	{
-		return parentCells.getCp().getByParent(this);
+		Set<Cell> daughters=parentCells.getCp().getByParent(this);
+		if(daughters==null ||daughters.isEmpty()){
+			return null;
+		}
+		return daughters;
 	}
 
+	/**
+	 * 
+	 * @return the Set of mothers. If no mothers of this cells exists returns null
+	 */
 	public Set<Cell> getMothers()
-	{
-		return parentCells.getCp().getByChild(this);
+	{	
+		Set<Cell> moms=parentCells.getCp().getByChild(this);
+		if(moms==null || moms.isEmpty()){
+			return null;
+		}
+		
+		return moms; 
 	}
 
 	public void addMother(Cell mother)

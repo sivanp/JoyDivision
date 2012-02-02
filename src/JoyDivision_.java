@@ -158,9 +158,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		IJ.run("Misc...", "divide=Infinity require run");
 		frame = new JFrame("JoyDivision!");
 		panel = new JPanel(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();	
-		panel.setBackground(SystemColor.control);
-		c.fill = GridBagConstraints.HORIZONTAL;
+
 
 		menuBar = new JMenuBar();
 		fileMenu = new JMenu("File");		
@@ -227,138 +225,145 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		menuItemChangeAllowedDist.addActionListener(this);
 		propertiesMenu.add(menuItemChangeAllowedDist);
 		
-		c.weightx=0.5;
+		
+		GridBagConstraints c = new GridBagConstraints();	
+		panel.setBackground(SystemColor.control);
+		c.fill = GridBagConstraints.HORIZONTAL;
+		//c.gridwidth=GridBagConstraints.RELATIVE;
+		c.gridwidth=3;
+		c.weightx=0;
 		c.gridx=0;
-		c.gridy=0;
+		c.gridy=0;		
 		panel.add(new JLabel("cell id:"),c);
 
 		textCellId=new JTextField("");
 		textCellId.addActionListener(this);
-		c.weightx=0.5;
-		c.gridx=1;
-		c.gridy=0;		
-		panel.add(textCellId,c);
-
-		c.weightx=0.5;
-		c.gridx=2;
-		c.gridy=0;
-		panel.add(new JLabel("cell name:"),c);
-
-		txtCellName=new JTextField("");		
+		c.gridwidth=3;
 		c.weightx=0.5;
 		c.gridx=3;
 		c.gridy=0;
-		panel.add(txtCellName,c);
+		panel.add(textCellId,c);
 
+		c.gridwidth=3;
+		c.weightx=0;
+		c.gridx=6;
+		c.gridy=0;
+		c.gridwidth=1;
+		panel.add(new JLabel("cell name:"),c);
+
+		txtCellName=new JTextField("");
+		txtCellName.setMinimumSize(new Dimension(20,20));
+		c.gridwidth=3;
 		c.weightx=0.5;
+		c.gridx=9;
+		c.gridy=0;
+		panel.add(txtCellName,c);
+		
+		c.gridwidth=3;
+		c.weightx=0;
 		c.gridx=0;
 		c.gridy=1;
 		panel.add(new JLabel("mom id:"),c);
 
-		textMomId=new JTextField("");	
+		textMomId=new JTextField("");
+		c.gridwidth=3;
 		c.weightx=0.5;
-		c.gridx=1;
-		c.gridy=1;		
+		c.gridx=3;
+		c.gridy=1;	
 		panel.add(textMomId,c);
 
-		c.weightx=0.5;
-		c.gridx=2;
-		c.gridy=1; 
+		c.gridwidth=3;
+		c.weightx=0;
+		c.gridx=6;
+		c.gridy=1;
 		panel.add(new JLabel("mom name:"),c);
 
 		txtMomName=new JTextField("");		
+		c.gridwidth=3;
 		c.weightx=0.5;
-		c.gridx=3;
+		c.gridx=9;
 		c.gridy=1;
 		panel.add(txtMomName,c);
-
-
+		
+		
 		butGetCell = new JButton("Get Cell");
 		butGetCell.addActionListener(this);
-		c.weightx=0.5;
+		c.gridwidth=6;
+		c.weightx=0;
 		c.gridx=0;
 		c.gridy=2;
+		c.insets=new Insets(3, 3, 3, 3);
 		panel.add(butGetCell,c);
 
+		butAddLoc = new JButton("Add roi");		
+		butAddLoc.addActionListener(this);
+		c.gridwidth=6;
+		c.gridx=6;
+		c.gridy=2;
+		panel.add(butAddLoc,c);
+		
 		butCellDivision = new JButton("Cell Division");
 		butCellDivision.addActionListener(this);
-		c.weightx=0.5;
-		c.gridx=1;
-		c.gridy=2;
-		panel.add(butCellDivision,c);
-
-		butAddSis = new JButton("Add Sister");
-		butAddSis.addActionListener(this);
-		c.weightx=0.5;
-		c.gridx=2;
-		c.gridy=2;
-		panel.add(butAddSis,c);
-
-		butDeleteCell = new JButton("Delete Cell");
-		butDeleteCell.addActionListener(this);
-		c.weightx=0.5;
-		c.gridx=0;
-		c.gridy=6;
-		panel.add(butDeleteCell,c);
-
-
-		butDeleteCellLocations = new JButton("Delete Cell from frame");
-		butDeleteCellLocations.addActionListener(this);
-		c.weightx=0.5;
-		c.gridx=1;
-		c.gridy=6;
-		panel.add(butDeleteCellLocations,c);
-
-		butSwapCells = new JButton("butSwapCells");
-		butSwapCells.addActionListener(this);
-		c.weightx=0.5;
-		c.gridx=2;
-		c.gridy=6;
-		panel.add(butSwapCells,c);
-
-
-
-		butAddMom = new JButton("Add Mother");
-		butAddMom.addActionListener(this);
-		c.weightx=0.5;
+		c.gridwidth=6;
 		c.gridx=0;
 		c.gridy=3;
-		panel.add(butAddMom,c);
-
-		butRemoveMom = new JButton("Remove Mother");
-		butRemoveMom.addActionListener(this);
-		c.weightx=0.5;
-		c.gridx=0;
-		c.gridy=4;
-		panel.add(butRemoveMom,c);
-
-		butContMode = new JToggleButton("Cont Mode");
+		panel.add(butCellDivision,c);	
+		
+		butContMode = new JToggleButton("Cont Mode");		
 		butContMode.addActionListener(this);
-		c.weightx=0.5;
-		c.gridx=3;
+		c.gridwidth=6;
+		c.gridx=6;
 		c.gridy=3;
 		panel.add(butContMode,c);
-
-		butCellStart = new JButton("Go to Cell Start");
+				
+		butDeleteCell = new JButton("Delete Cell");
+		butDeleteCell.addActionListener(this);	
+		c.gridx=0;
+		c.gridy=4;
+		panel.add(butDeleteCell,c);
+		
+		butDeleteCellLocations = new JButton("Delete frame");
+		butDeleteCellLocations.addActionListener(this);		
+		c.gridx=6;
+		c.gridy=4;
+		panel.add(butDeleteCellLocations,c);
+		
+		butCellStart = new JButton("Cell Start");
 		butCellStart.addActionListener(this);
-		c.weightx=0.5;
+		c.weightx=0;
+		c.gridwidth=6;
 		c.gridx=0;
 		c.gridy=5;
 		panel.add(butCellStart,c);
 
-		butCellEnd = new JButton("Go to Cell End");
+		butCellEnd = new JButton("Cell End");
 		butCellEnd.addActionListener(this);
-		c.weightx=0.5;
-		c.gridx=1;
+		c.weightx=0.1;
+		c.gridwidth=6;
+		c.gridx=6;
 		c.gridy=5;
 		panel.add(butCellEnd,c);
 
-		butAddLoc = new JButton("Add roi to cell");		
-		butAddLoc.addActionListener(this);
-		c.weightx=0.5;
+		butAddMom = new JButton("Add Mother");
+		butAddMom.addActionListener(this);		
+		c.gridx=0;
+		c.gridy=6;
+		panel.add(butAddMom,c);		
+		
+		butRemoveMom = new JButton("Remove Mother");
+		butRemoveMom.addActionListener(this);		
+		c.gridx=6;
+		c.gridy=6;
+		panel.add(butRemoveMom,c);
+	
+		butSwapCells = new JButton("Swap cells");
+		butSwapCells.addActionListener(this);
 		c.gridx=0;
 		c.gridy=7;
-		panel.add(butAddLoc,c);
+		panel.add(butSwapCells,c);
+		
+		
+		
 		
 		imp.getCanvas().addMouseListener(this);
 		imp.getCanvas().addKeyListener(this) ;
@@ -478,16 +483,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		}
 
 		else if(e.getSource()==butCellDivision){
-			Roi roi = imp.getRoi();
-			if(roi==null || curCell==null){
-				IJ.showMessage("can't divide: either no current cell or no roi");
-				return;
-			}				
-			Cell mom=curCell;
-			Cell newCell=cellsStruct.addNewCell();
-			newCell.addMother(mom);
-			this.updateCurCell(newCell);			
-			this.addRoiToCell(imp.getRoi());			
+			cellDivision();			
 		}
 
 		else if(e.getSource()==butCellStart){
@@ -610,20 +606,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		}
 
 		else if(e.getSource()==butContMode){
-			if(butContMode.isSelected()){
-				Thread queryThread = new Thread() {
-					public void run() {
-						if(monitorSet.isEmpty()){ //monitor curCell
-							wandTrackCurCell();
-						}
-						else{
-							wandTrackSet();
-						}
-					}
-				};
-				queryThread.start();
-				
-			}
+			contMode();
 
 		}	
 
@@ -679,6 +662,42 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		}
 		
 		drawFrame();
+	}
+
+	/**
+	 * 
+	 */
+	private void cellDivision() {
+		Roi roi = imp.getRoi();
+		if(roi==null || curCell==null){
+			IJ.showMessage("can't divide: either no current cell or no roi");
+			return;
+		}				
+		Cell mom=curCell;
+		Cell newCell=cellsStruct.addNewCell();
+		newCell.addMother(mom);
+		this.updateCurCell(newCell);			
+		this.addRoiToCell(imp.getRoi());
+	}
+
+	/**
+	 * 
+	 */
+	private void contMode() {
+		if(butContMode.isSelected()){
+			Thread queryThread = new Thread() {
+				public void run() {
+					if(monitorSet.isEmpty()){ //monitor curCell
+						wandTrackCurCell();
+					}
+					else{
+						wandTrackSet();
+					}
+				}
+			};
+			queryThread.start();
+			
+		}
 	}
 	public void itemStateChanged(ItemEvent e){
 		IJ.showMessage("itemPerformed", "at: "+e);	
@@ -940,7 +959,34 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 			
 			
 		}
-		//To do check distance from previous and possible current
+		//check if there's a mother of this cell exists in this frame or later
+		Set<Cell> moms=curCell.getMothers();		
+		if(moms!=null){
+			Iterator<Cell> miter=moms.iterator();
+			while(miter.hasNext()){
+				Cell mom=miter.next();
+				int maxFrame=cellsStruct.getCl().getMaxFrame(mom);
+				if(maxFrame>=frame){
+					IJ.showMessage("a mother of this cell exists in a later frame");
+					return;				
+
+				}
+			}
+		}
+		//check if there's a daughter of this cell exists in this frame or earlier
+		Set<Cell> daughts=curCell.getDaughters();		
+		if(daughts!=null){
+			Iterator<Cell> diter=daughts.iterator();
+			while(diter.hasNext()){
+				Cell daught=diter.next();
+				int minFrame=cellsStruct.getCl().getMinFrame(daught);
+				if(minFrame<=frame){
+					IJ.showMessage("a daughter of this cell exists in a previous frame");
+					return;				
+
+				}
+			}
+		}
 		curCell.addLocation(frame, roi);
 
 	}
@@ -999,8 +1045,28 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 			this.removeFromMonitorSet();
 		}	
 		else if(key.getKeyChar()=='c'){
-			this.clearMonitorSet();
+			if(butContMode.isSelected()){
+				butContMode.setSelected(false);
+			}
+			else{
+				butContMode.setSelected(true);
+				this.contMode();
+			}
 		}
+		else if(key.getKeyChar()=='d'){
+			this.cellDivision();
+		}
+		else if(key.getKeyChar()=='m'){
+			if(curCell==null){
+				return;
+			}
+			Set<Cell> moms= curCell.getMothers();
+			if(moms==null ||moms.isEmpty()){
+				return;
+			}
+			curCell=moms.iterator().next();			
+		}
+		
 		drawFrame();
 		this.setCellsGui();
 	}
