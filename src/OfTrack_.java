@@ -13,9 +13,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.Vector;
 
 
@@ -35,7 +40,7 @@ public class OfTrack_ extends  MTrack3_
 	@Override
 	public void run(ImageProcessor ip) 
 	{
-		Vector<Vector<Particle>> theTracks= track(imp, 50, 800,(float) 20.0,null ,null) ;
+		Vector<Vector<Particle>> theTracks= track(imp, 10, 800,(float) 100.0,null ,null) ;
 		 IJ.setAutoThreshold(imp, "Default");		
 		cellsStruct = new Cells();
 
@@ -43,9 +48,15 @@ public class OfTrack_ extends  MTrack3_
 
 		ResultsTable positionTable = new ResultsTable();
 		
-		for(int i = 0; i < theTracks.size(); i++)
+		positionTable.reset();
+		
+		int theTrackssize =  theTracks.size();
+		
+		for(int i = 0; i < theTrackssize; i++)
 		{
 
+			IJ.showProgress((double)i /theTrackssize );
+			
 			Vector<Particle> trackParticles = theTracks.get(i);
 			if(trackParticles.size() >= minTrackLength)
 			{
@@ -64,6 +75,7 @@ public class OfTrack_ extends  MTrack3_
 
 					positionTable.incrementCounter();
 					aParticle.displayTrackNr = i+1;
+					positionTable.addValue("CellID",childCell.id);
 					positionTable.addValue("Track", aParticle.displayTrackNr);
 					positionTable.addValue("Frame", aParticle.z);
 					positionTable.addValue("X", aParticle.x);
@@ -71,6 +83,7 @@ public class OfTrack_ extends  MTrack3_
 					positionTable.addValue("Y", aParticle.y);
 					positionTable.addValue("velY", aParticle.velY);
 					positionTable.addValue("Flags", (aParticle.flag?1:0));
+					
 				}
 			}
 		}
@@ -78,22 +91,33 @@ public class OfTrack_ extends  MTrack3_
 		IJ.showStatus("starting to look for mommies");
 		imp.setSlice(1);
 		int firstFrame=PathTokens.getCurFrame(imp);
+		
 		// find Cells starting not in the first frame.			
 		Set<Integer> cellsSet=cellsStruct.keySet();
-		int[] cellIds = new int[cellsSet.size()];
+		
+		SortedSet<Cell> cellsSortedByFirstFrame = new TreeSet<Cell>(new CellFramesComparator());
+		cellsSortedByFirstFrame.addAll(cellsStruct.values());
+	
+		
+		int[] cellIds = new int[cellsSortedByFirstFrame.size()];
 		int i=0;
 		
-		for (Integer cellId:cellsSet )
+		
+		for (Cell cell:cellsSortedByFirstFrame )
 		{
-			IJ.showStatus("cell id: "+cellIds[i]);
-			cellIds[i] = cellId.intValue();
+			//IJ.showStatus("cell id: "+cellIds[i]);
+			cellIds[i] = cell.getId();
 			i++;
 		}
-		for(int j=0; j<cellIds.length;j++)
-		{	
+		
+		
+		int cellIdsSize = cellIds.length;
+		for(int j=0; j<cellIdsSize;j++)
+		{
+			IJ.showProgress((double)j /cellIdsSize );
 			Cell cell=cellsStruct.get(cellIds[j]);
 			if ((!cell.getFrames().contains(firstFrame) )&& cell.getMothers()==null )
-			{//not in first frame and No mommy Looking for my mommy 
+			{//not in first frame and No mommy Looking for my mommy
 				updateMyMother(cell);
 
 			}
@@ -131,6 +155,7 @@ public class OfTrack_ extends  MTrack3_
 
 	private void updateMyMother(Cell cell) 
 	{
+		System.out.println(cell.getId());
 		Integer[] cellFrames =  cell.getFrames().toArray(new Integer[0]) ;
 		Arrays.sort(cellFrames);
 		int firstCellSlice = mapFrameSlice.get(cellFrames[0]) ;
@@ -188,10 +213,16 @@ public class OfTrack_ extends  MTrack3_
 		//TODO:create Parameters
 		if (getCellsDistance( childCell, childFrame, momCell, momFrame) < 30 && momCell.getLocationInFrame(childFrame)!=null)
 		{			
-			cellsScore = Math.abs( getCellSize(momCell,momFrame) - (getCellSize(childCell,childFrame) + getCellSize(momCell,childFrame)));
+			cellsScore = Math.abs(1- ( getCellSize(momCell,momFrame) /(getCellSize(childCell,childFrame) + getCellSize(momCell,childFrame) )));
 			
 		}
-		return cellsScore;
+		if (cellsScore>0.4)
+		{
+			return Double.MAX_VALUE;
+		}
+		else {
+			return getCellsDistance( childCell, childFrame, momCell, momFrame);
+		}
 	}
 
 
@@ -224,6 +255,18 @@ public class OfTrack_ extends  MTrack3_
 			ex.printStackTrace();
 		}
 
+	}
+
+	
+	private class CellFramesComparator implements Comparator<Cell>
+	{
+
+		@Override
+		public int compare(Cell c1, Cell c2) {
+			
+			return c1.getFrames().first() -  c2.getFrames().first();
+		}
+		
 	}
 
 

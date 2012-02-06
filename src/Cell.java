@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.SortedSet;
 
 
 public class Cell implements Serializable 
@@ -74,7 +75,8 @@ public class Cell implements Serializable
 		return res;
 	}
 
-	public Set<Integer> getFrames(){
+	public SortedSet<Integer> getFrames()
+	{
 		return parentCells.getCl().getFrames(this);
 	}
 

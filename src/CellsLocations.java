@@ -6,7 +6,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
+import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
@@ -118,12 +120,14 @@ public class CellsLocations implements Serializable {
 		}
 		return cellsInFrame.get(cell);
 	}
-	public Set<Integer> getFrames(Cell cell) {
+	public SortedSet<Integer> getFrames(Cell cell) {
 		SortedMap<Integer,PolyProperty> locs=byCell.get(cell);
-		if(locs==null){
+		if(locs==null)
+		{
 			return null;
 		}
-		return locs.keySet();
+		
+		return new TreeSet<Integer>(locs.keySet());
 		
 	}
 	
