@@ -9,7 +9,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 
-public class Cell implements Serializable 
+public class Cell implements Serializable, Comparable<Cell> 
 {
 	/**
 	 * 
@@ -262,6 +262,15 @@ public class Cell implements Serializable
 		 boolean res=false;
 		res=parentCells.removeCellLocation(this, frame);
 		return res;
+	}
+
+
+	@Override
+	public int compareTo(Cell otherCell) {
+		// TODO Auto-generated method stub
+		Integer thisId=new Integer(this.id);
+		Integer otherId=new Integer(otherCell.getId());
+		return thisId.compareTo(otherId);
 	}
 
 }

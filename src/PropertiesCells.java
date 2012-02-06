@@ -24,11 +24,51 @@ public class PropertiesCells extends Cells {
 	  * @param cells
 	  */
 	 public PropertiesCells(Cells cells){
-		 super(cells);
-		 this.cp=cells.cp; 
-		 this.cl=cells.cl;
-		 this.lastId=cells.lastId;
+//		 super(cells); //need to do deep copying so that the cells will hold a reference to the new proerties cells
+//		 this.cp=cells.cp; 
+//		 this.cl=cells.cl;
+//		 this.lastId=cells.lastId;
+//		 propId2NameMapping=new HashMap<Integer, String>();
+		 super();
+		 Set<Integer> oldIds=cells.keySet();		 
+		 Map<Integer, Integer> old2NewIdsMap=new HashMap<Integer,Integer>();
+		 if(oldIds!=null){
+			 Iterator<Integer> iter=oldIds.iterator();
+			 while(iter.hasNext()){
+				 int cellId=iter.next();
+				 Cell curCell=cells.get(cellId);
+				 Cell newCell=this.addNewCell();
+				 old2NewIdsMap.put(curCell.getId(), newCell.getId());
+				 Set<Integer> frames=curCell.getFrames();
+				 Iterator<Integer> fiter=frames.iterator();
+				 while(fiter.hasNext()){
+					 int frame=fiter.next();
+					 PolyProperty p=curCell.getLocationInFrame(frame);
+					 newCell.addLocation(frame, p);
+				 }
+			 }
+			 //got all cells and locations updated. now update mother-daughter mapping
+			 iter=oldIds.iterator();
+			 while(iter.hasNext()){
+				 int cellId=iter.next();
+				 Cell curCell=cells.get(cellId);
+				 int newCellId=old2NewIdsMap.get(cellId);
+				 Cell newCell=this.getCell(newCellId);
+				 Set<Cell> daughts=curCell.getDaughters();
+				 if(daughts==null){
+					 continue;
+				 }
+				 Iterator<Cell> citer=daughts.iterator();
+				 while(citer.hasNext()){
+					 Cell daught=citer.next();	
+					 int newDaughtId=old2NewIdsMap.get(daught.getId());
+					 Cell newDaught=this.get(newDaughtId);
+					 newCell.addDaughter(newDaught);
+				 }
+			 }
+		 }
 		 propId2NameMapping=new HashMap<Integer, String>();
+		 
 	 }
 	 
 	 public String addProperty(int id, String name){

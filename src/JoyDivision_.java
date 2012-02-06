@@ -86,9 +86,13 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	JMenuItem menuItemClearSet;
 	JMenuItem menuItemGetTimes;
 	JMenuItem menuItemExtractFluo;
+	JMenuItem menuItemExtractArea;
 	JMenu propertiesMenu;
 	JMenuItem menuItemChangeWait;
 	JMenuItem menuItemChangeAllowedDist;
+	JMenu toolsMenu;
+	JMenuItem menuItemPaprikaTrack;
+	
 	
 	boolean mouseListening=false;
 
@@ -213,7 +217,11 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		menuItemExtractFluo=new JMenuItem("Extract Fluorescence");
 		menuItemExtractFluo.addActionListener(this);
 		viewMenu.add(menuItemExtractFluo);
-
+		
+		menuItemExtractArea=new JMenuItem("Extract Area");
+		menuItemExtractArea.addActionListener(this);
+		viewMenu.add(menuItemExtractArea);
+		
 		propertiesMenu=new JMenu("Properties");
 		menuBar.add(propertiesMenu);
 
@@ -224,6 +232,13 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		menuItemChangeAllowedDist= new JMenuItem("Set allowed distance");
 		menuItemChangeAllowedDist.addActionListener(this);
 		propertiesMenu.add(menuItemChangeAllowedDist);
+		
+		toolsMenu=new JMenu("tools");
+		menuBar.add(toolsMenu);
+		
+		menuItemPaprikaTrack= new JMenuItem("Paprika track");
+		menuItemPaprikaTrack.addActionListener(this);
+		toolsMenu.add(menuItemPaprikaTrack);
 		
 		
 		GridBagConstraints c = new GridBagConstraints();	
@@ -648,6 +663,9 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		else if(e.getSource()==menuItemExtractFluo){
 			extractFluo();
 		}
+		else if(e.getSource()==menuItemExtractArea){
+			extractArea();
+		}
 		else if(e.getSource()==menuItemChangeWait){
 			GenericDialog gd=new GenericDialog("Change ContMode wait time");
 			gd.addNumericField("Enter new wait in millisecond?", waitmill, 4);
@@ -659,6 +677,15 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 			gd.addNumericField("Enter new distance:", allowedDist , 4);
 			gd.showDialog();
 			allowedDist=(int)gd.getNextNumber();		
+		}
+		else if(e.getSource()==menuItemPaprikaTrack){
+			if(!(cellsStruct instanceof PropertiesCells)){				
+				IJ.showMessage("no area property in the current structure aborting");
+			}
+			Cell cell=cellsStruct.getCell(1);
+			
+			PaprikaTrack paptrack=new PaprikaTrack(imp, (PropertiesCells)cellsStruct);
+			cellsStruct=paptrack.track();
 		}
 		
 		drawFrame();
@@ -1283,6 +1310,67 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		}		
 	}
 
+	
+	/**
+	 * The imagePlus opened is taken and for each frame the relative roi from each cell is taken 
+	 * for which the mean values in the relative location in the current ImagePlus is calculated and added 
+	 */
+	public void extractArea(){
+		GenericDialog gd = new GenericDialog("YesNoCancel");
+		gd.addMessage("Is the current image contains the needed area marks?");
+		gd.enableYesNoCancel();
+		gd.showDialog();
+		if (gd.wasCanceled())
+			return;
+		else if (!gd.wasOKed())
+			return;
+	
+		String propName="Area";		
+
+		if(!(cellsStruct instanceof PropertiesCells)){
+			PropertiesCells newCellsStruct=new PropertiesCells(cellsStruct);
+			cellsStruct=newCellsStruct;			
+		}
+		else{
+			Collection<String> props=((PropertiesCells) cellsStruct).getPropertyNames();
+			if(props!=null){
+				if(props.contains(propName)){
+					IJ.showMessage("Structure already contains Property "+propName);
+					return;
+				}
+			}
+		}
+		//now we are ready to start:
+		((PropertiesCells) cellsStruct).addProperty(propName);			
+		//we will go over all frames and update their ROI to be PolyProperty and hold the correct value-
+		//here- we calculate the mean fluo of the each cell in each frame
+		ImagePlus fimp=IJ.getImage();
+		for (int curSlice=1; curSlice<=fimp.getStackSize();curSlice++){
+			fimp.setSlice(curSlice);
+			int curFrame=PathTokens.getCurFrame(fimp);
+			Set<Cell> frameCells=cellsStruct.getCellsInFrame(curFrame);
+			if(frameCells!=null){
+				Iterator<Cell> citer=frameCells.iterator();
+				while(citer.hasNext()){
+					Cell curCell=citer.next();
+					PolyProperty curRoi=curCell.getLocationInFrame(curFrame);								
+					//find the mean of this Roi
+					fimp.setRoi(curRoi.getRoi());
+					ImageStatistics stats= ImageStatistics.getStatistics(fimp.getProcessor(), Measurements.AREA	,fimp.getCalibration());
+					PropertiesCells propCells=(PropertiesCells)cellsStruct;
+					int propId=propCells.getPropertyId(propName);
+					curRoi.setProperty(propId, stats.area);
+					curCell.addLocation(curFrame, curRoi);				
+				}
+			}   
+		}		
+	}
+
+	
+	
+	
+	
+	
 	private void addToMonitorSet(){
 		if(curCell!=null){
 			monitorSet.add(curCell);
