@@ -78,18 +78,27 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	JMenuItem menuItemLoadStruct;
 	JMenuItem menuItemExportStruct;
 	JMenu viewMenu;
+	
 	JCheckBoxMenuItem menuItemDisplayNames;
 	JCheckBoxMenuItem menuItemDisplayRois;
+	JMenuItem menuItemGetTimes;
+	JMenuItem menuItemExtractFluo;
+	JMenuItem menuItemExtractArea;
+	JMenuItem menuItemRemoveProperty;
+	JMenuItem menuItemDisplayProperties;	
+	JMenuItem menuItemDisplayMoms;
+	JMenuItem menuItemDisplayDaughters;
+	JMenuItem menuItemDeleteSublineage;
+	
+	JMenu monitorMenu;
 	JMenuItem menuItemAdd2Set;
 	JMenuItem menuItemRemoveFromSet;
 	JMenuItem menuItemShowSet;
 	JMenuItem menuItemClearSet;
-	JMenuItem menuItemGetTimes;
-	JMenuItem menuItemExtractFluo;
-	JMenuItem menuItemExtractArea;
+	
 	JMenu propertiesMenu;
 	JMenuItem menuItemChangeWait;
-	JMenuItem menuItemChangeAllowedDist;
+	JMenuItem menuItemChangeAllowedDist;	
 	JMenu toolsMenu;
 	JMenuItem menuItemPaprikaTrack;
 	
@@ -183,6 +192,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		viewMenu=new JMenu("Edit&View");
 		menuBar.add(viewMenu);
 		
+		
 		menuItemDisplayNames= new JCheckBoxMenuItem("display names");
 		menuItemDisplayNames.doClick();
 		menuItemDisplayNames.addActionListener(this);
@@ -191,36 +201,43 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		menuItemDisplayRois= new JCheckBoxMenuItem("display rois");
 		menuItemDisplayRois.doClick();
 		menuItemDisplayRois.addActionListener(this);
-		viewMenu.add(menuItemDisplayRois);
+		viewMenu.add(menuItemDisplayRois);	
+		
 
+		menuItemDisplayMoms=new JMenuItem("Show mothers ids");
+		menuItemDisplayMoms.addActionListener(this);
+		viewMenu.add(menuItemDisplayMoms);
+		
+		menuItemDisplayDaughters=new JMenuItem("Show daughters ids");
+		menuItemDisplayDaughters.addActionListener(this);
+		viewMenu.add(menuItemDisplayDaughters);		
+		
+		menuItemDeleteSublineage=new JMenuItem("Delete cell sublineage");
+		menuItemDeleteSublineage.addActionListener(this);
+		viewMenu.add(menuItemDeleteSublineage);		
+				
+		
+		
+		monitorMenu=new JMenu("Monitor Set");
+		menuBar.add(monitorMenu);
+		
 		menuItemAdd2Set=new JMenuItem("Add to monitor set");
 		menuItemAdd2Set.addActionListener(this);
-		viewMenu.add(menuItemAdd2Set);
+		monitorMenu.add(menuItemAdd2Set);
 
 		menuItemRemoveFromSet= new JMenuItem("Remove from monitor set");
 		menuItemRemoveFromSet.addActionListener(this);
-		viewMenu.add(menuItemRemoveFromSet);
+		monitorMenu.add(menuItemRemoveFromSet);
 		
 		menuItemShowSet = new JMenuItem("show cells ids in monitor set");
 		menuItemShowSet.addActionListener(this);
-		viewMenu.add(menuItemShowSet);
+		monitorMenu.add(menuItemShowSet);
 		
 		
 		menuItemClearSet=new JMenuItem("Clear monitor set");
 		menuItemClearSet.addActionListener(this);
-		viewMenu.add(menuItemClearSet);
-
-		menuItemGetTimes=new JMenuItem("Get time of stack files");
-		menuItemGetTimes.addActionListener(this);
-		viewMenu.add(menuItemGetTimes);
-
-		menuItemExtractFluo=new JMenuItem("Extract Fluorescence");
-		menuItemExtractFluo.addActionListener(this);
-		viewMenu.add(menuItemExtractFluo);
+		monitorMenu.add(menuItemClearSet);	
 		
-		menuItemExtractArea=new JMenuItem("Extract Area");
-		menuItemExtractArea.addActionListener(this);
-		viewMenu.add(menuItemExtractArea);
 		
 		propertiesMenu=new JMenu("Properties");
 		menuBar.add(propertiesMenu);
@@ -235,6 +252,28 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		
 		toolsMenu=new JMenu("tools");
 		menuBar.add(toolsMenu);
+		
+		
+		menuItemExtractFluo=new JMenuItem("Extract Fluorescence");
+		menuItemExtractFluo.addActionListener(this);
+		toolsMenu.add(menuItemExtractFluo);
+		
+		menuItemExtractArea=new JMenuItem("Extract Area");
+		menuItemExtractArea.addActionListener(this);
+		toolsMenu.add(menuItemExtractArea);
+		
+		menuItemRemoveProperty=new JMenuItem("Remove Property");
+		menuItemRemoveProperty.addActionListener(this);
+		toolsMenu.add(menuItemRemoveProperty);
+		
+		menuItemDisplayProperties=new JMenuItem("Display Properties");
+		menuItemDisplayProperties.addActionListener(this);
+		toolsMenu.add(menuItemDisplayProperties);
+		
+		menuItemGetTimes=new JMenuItem("Get time of stack files");
+		menuItemGetTimes.addActionListener(this);
+		toolsMenu.add(menuItemGetTimes);
+
 		
 		menuItemPaprikaTrack= new JMenuItem("Paprika track");
 		menuItemPaprikaTrack.addActionListener(this);
@@ -476,8 +515,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		return pt.getSite();
 	}
 
-	public void actionPerformed(ActionEvent e){
-
+	public void actionPerformed(ActionEvent e){		
 		if (e.getSource() == butGetCell) {
 			mouseListening=true;
 
@@ -553,7 +591,18 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 			monitorSet.remove(curCell);
 			this.updateCurCell(null);	
 		}
-
+		
+		else if(e.getSource()==menuItemDeleteSublineage){
+			if(curCell==null){
+				IJ.showMessage("cannot delete: no current cell");
+				return;
+			}
+			cellsStruct.removeSublineage(curCell);
+			monitorSet.remove(curCell);
+			this.updateCurCell(null);	
+		}
+		
+	
 		else if (e.getSource()==butDeleteCellLocations){
 			if(curCell==null){
 				IJ.showMessage("cannot delete: no current cell");
@@ -592,7 +641,11 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 
 		else if(e.getSource()==butSwapCells){
 			GenericDialog gd=new GenericDialog("Swap cells");
-			gd.addNumericField("Id of first cell?", -1, 4);
+			int id1=-1;
+			if(curCell!=null){
+				id1=curCell.getId();
+			}
+			gd.addNumericField("Id of first cell?", id1, 4);
 			gd.showDialog();
 			Integer c1=(int)gd.getNextNumber();
 			Cell cell1=cellsStruct.getCell(c1);
@@ -601,7 +654,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 				return;
 			}
 			gd=new GenericDialog("Swap cells");
-			gd.addNumericField("Id of second cell?", -1, 4);
+			gd.addNumericField("Id of second cell?", -1, 0);
 			gd.showDialog();
 			Integer c2=(int)gd.getNextNumber();	
 			Cell cell2=cellsStruct.getCell(c2);
@@ -610,10 +663,21 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 				return;
 			}
 			gd=new GenericDialog("Delte cell from frame");
-			gd.addNumericField("What frame to start earsing from?", -1, 4);
+			gd.addNumericField("What frame to start earsing from?", getCurFrame(), 4);
 			gd.showDialog();
 			Integer frame=(int)gd.getNextNumber();			
-			cellsStruct.swapCellLocations(cell1, cell2, frame);			
+			cellsStruct.swapCellLocations(cell1, cell2, frame);		
+			if(!cellsStruct.contains(curCell)){				
+				if(cellsStruct.contains(cell1)){
+					curCell=cell1;
+				}
+				else if(cellsStruct.contains(cell2)){
+					curCell=cell2;
+				}
+			}
+			this.updateCurCell(curCell);
+			
+			
 		}
 
 		else if(e.getSource()==butAddSis){
@@ -632,7 +696,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 			cellsStruct=this.loadCellsStruct();
 		}
 		else if (e.getSource()==menuItemExportStruct){
-			String path=getSavePath();
+			String path=getSavePath();				
 			CellsWriter.writeStructure(path, cellsStruct);
 		}
 
@@ -645,6 +709,37 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		}
 		else if(e.getSource()==menuItemClearSet){
 			this.clearMonitorSet();
+		}
+		
+		else if(e.getSource()==menuItemDisplayMoms){
+			if(curCell==null){
+				IJ.showMessage("no cell is selected");
+			}
+			else{
+				String res="mother ids:";
+				Set<Cell> moms=curCell.getMothers();
+				if(moms!=null){
+					for(Cell mom:moms){
+						res+=" "+mom.getId();
+					}
+				}
+				IJ.showMessage(res);
+			}
+		}
+		else if(e.getSource()==menuItemDisplayDaughters){
+			if(curCell==null){
+				IJ.showMessage("no cell is selected");
+			}
+			else{
+				String res="daughters ids:";
+				Set<Cell> daughts=curCell.getDaughters();
+				if(daughts!=null){
+					for(Cell d:daughts){
+						res+=" "+d.getId();
+					}
+				}
+				IJ.showMessage(res);
+			}
 		}
 		
 		else if(e.getSource()==menuItemShowSet){
@@ -666,6 +761,14 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		else if(e.getSource()==menuItemExtractArea){
 			extractArea();
 		}
+		else if(e.getSource()==menuItemRemoveProperty){
+			removePoperty();
+		}
+		else if(e.getSource()==menuItemDisplayProperties){
+			displayProperties();
+		}
+		
+		
 		else if(e.getSource()==menuItemChangeWait){
 			GenericDialog gd=new GenericDialog("Change ContMode wait time");
 			gd.addNumericField("Enter new wait in millisecond?", waitmill, 4);
@@ -685,7 +788,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 			Cell cell=cellsStruct.getCell(1);
 			
 			PaprikaTrack paptrack=new PaprikaTrack(imp, (PropertiesCells)cellsStruct);
-			cellsStruct=paptrack.track();
+			cellsStruct=paptrack.track(monitorSet);
 		}
 		
 		drawFrame();
@@ -871,7 +974,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 			fis = new FileInputStream(filename);
 			in = new ObjectInputStream(fis);
 			Cells cells=(Cells)in.readObject();
-			in.close();
+			in.close();			
 			return cells;
 		}
 		catch(IOException ex)
@@ -886,6 +989,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 			ex.printStackTrace();
 			return null;
 		}
+		
 	}
 
 
@@ -1029,7 +1133,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 
 	}
 	private void updateCurCell(Cell newCell){
-		curCell=newCell;
+		curCell=newCell; 
 		setCellsGui();
 	}
 
@@ -1367,8 +1471,50 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	}
 
 	
+	/*
+	 * Remove the properties with the given name from the cellstruct
+	 */
+	public void removePoperty(){
+		if(!(cellsStruct instanceof PropertiesCells)){
+			IJ.showMessage("no properties in current structure");
+			return;
+		}
+		GenericDialog gd = new GenericDialog("Remove property");
+		gd=new GenericDialog("What is the name of the property?");
+		gd.addStringField("property name:", "GFP");	
+		gd.showDialog();
+		TextField txt=(TextField)gd.getStringFields().firstElement();
+		String propName=txt.getText();	
+		PropertiesCells cells=(PropertiesCells)cellsStruct;
+		int propId=cells.getPropertyId(propName);
+		if(propId==-1){
+			IJ.showMessage("no property "+propName+" in current structure");
+			return;
+		}
+		for(Cell cell: cells.values()){
+			if(cell.getFrames()!=null){			
+				for(Integer frame: cell.getFrames()){
+					PolyProperty poly=cell.getLocationInFrame(frame);
+					poly.removeProperty(propId);
+				}
+			}
+		}
+		cells.propId2NameMapping.remove(propId);		
+	}
 	
 	
+	public void displayProperties(){
+		if(!(cellsStruct instanceof PropertiesCells)){
+			IJ.showMessage("no properties in current structure");
+			return;
+		}
+		PropertiesCells cells=(PropertiesCells)cellsStruct;
+		String props="";
+		for(int propId: cells.propId2NameMapping.keySet()){
+			props=propId+" "+cells.propId2NameMapping.get(propId)+"\n";			
+		}
+		IJ.showMessage(props);		
+	}
 	
 	
 	private void addToMonitorSet(){

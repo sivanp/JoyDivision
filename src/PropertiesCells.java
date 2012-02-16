@@ -106,12 +106,17 @@ public class PropertiesCells extends Cells {
 		 return propId2NameMapping.values();
 	 }
 
-	public int getPropertyId(String fluoname) {
+	 /**
+	  * 
+	  * @param propname
+	  * @return the property id, -1 if no such property exist
+	  */
+	public int getPropertyId(String propname) {
 		Set<Integer> ids=getPropertyIdSet();
 		Iterator<Integer> iter=ids.iterator();
 		while(iter.hasNext()){
 			int curId=iter.next();
-			if(fluoname.equals(propId2NameMapping.get(curId))){
+			if(propname.equals(propId2NameMapping.get(curId))){
 				return curId;
 			}
 		}

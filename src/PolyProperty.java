@@ -42,6 +42,10 @@ public class PolyProperty implements Serializable{
 		return propId2Value.get(propId);
 	}
 	
+	public Double removeProperty(int propId){
+		return propId2Value.remove(propId);
+	}
+	
 	public String toString(){
 		String res="";
 		res+=roi.toString();
@@ -72,6 +76,15 @@ public class PolyProperty implements Serializable{
 			return null;
 		}		
 		return propId+"="+val.toString();
+	}
+
+	public double getDist(PolyProperty p){
+		double x1=getRoi().getBounds().getCenterX();
+		double y1=getRoi().getBounds().getCenterY();
+		double x2=p.getRoi().getBounds().getCenterX();
+		double y2=p.getRoi().getBounds().getCenterY();
+		double dist=Math.sqrt(Math.pow((x1-x2), 2)+Math.pow((y1-y2), 2));
+		return dist;
 	}
 
 }

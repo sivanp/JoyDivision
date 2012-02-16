@@ -1,3 +1,4 @@
+import ij.IJ;
 import ij.gui.Roi;
 
 import java.awt.Rectangle;
@@ -135,7 +136,92 @@ public class Cells extends Hashtable<Integer, Cell> implements Serializable
 		}
 		return res;
 	}
+	
+	/*
+	 * swap the cells frames and their daughters.Swapping is allowed only when:
+	 * 1.one cell is not a direct ancestor of the other cell. 
+	 * 2.If they are mother daughter and swapping starts at the daughter first frame (i.e. merge of the daughter into the mother).
+	 * In this case the mother cannot have other daughters.	 
+	 * 3.both cell have a first frame <= the given frame
+	 */	
 	public void swapCellLocations(Cell cell1, Cell cell2, Integer frame) {
+		//checking conditions
+		Set<Cell> descendants1=cell1.getAllDescendants();
+		Set<Cell> descendants2=cell2.getAllDescendants();
+		if(descendants1.contains(cell1) || descendants2.contains(cell1)){	
+			//check if in the same generation- this should be true for ALL common ancestors or mother daughter
+			Cell mother=null;
+			Cell daughter=null;
+			if(descendants1.contains(cell1)){
+				Set<Cell> moms=cell2.getMothers();
+				if(moms.contains(cell1)){
+					mother=cell1;
+					daughter=cell2;
+				}				
+			}
+			else{
+				Set<Cell> moms=cell1.getMothers();
+				if(moms.contains(cell2)){					
+					mother=cell2;
+					daughter=cell1;
+				}
+			}
+			if(mother==null){ //they are more than one generation apart. 
+				IJ.showStatus("cannot swap cells:"+cell1.getId()+" & "+cell2.getId()+"from same lineage branch but too many generations apart");
+				return;
+			}
+			if(mother.getFrames().last()>daughter.getFrames().first()){
+				IJ.showStatus("cannot swap cells:"+cell1.getId()+" & "+cell2.getId()+"from same lineage, 1 generation apart but their frames coincide");
+				return;
+			}			
+		}
+		if(cell1.getFrames().first()>frame || cell2.getFrames().first()>frame){
+			IJ.showStatus("cannot swap cells: at least one of the cell is not born yet");
+			return;
+		}
+			
+//			Set<Cell> commonAnces=cell1.getCommonAncestors(cell2);
+//			if(!commonAnces.isEmpty()){
+//				boolean sameGeneraion=true;
+//				boolean followingGenerations=true;
+//				for(Cell ances: commonAnces){
+//					int dist1= cell1.getDist(ances);
+//					int dist2= cell2.getDist(ances);
+//					if(dist1!=dist2){
+//						sameGeneraion=false;
+//					}
+//					if (Math.abs(dist1-dist2)!=1){
+//						followingGenerations=false;
+//					}				
+//				}
+//				if(!sameGeneraion && !followingGenerations){
+//					IJ.showStatus("cannot swap cells:"+cell1.getId()+" & "+cell2.getId()+"from same lineage branch but too many generations apart");
+//					return;
+//				}
+//				if(followingGenerations){ //mother daughter
+//					Cell ances=commonAnces.iterator().next(); //doing this from the first ancestor.
+//					int dist1= cell1.getDist(ances);
+//					int dist2= cell2.getDist(ances);
+//					Cell mother;
+//					Cell daught;
+//					if(dist1<dist2){
+//						mother=cell1;
+//						daught=cell2;					
+//					}
+//					else{
+//						mother=cell2;
+//						daught=cell1;	
+//					}
+//					if(mother.getFrames().last()>daught.getFrames().first()){
+//						IJ.showStatus("cannot swap cells:"+cell1.getId()+" & "+cell2.getId()+"from same lineage, 1 generation apart but their frames coincide");
+//						return;
+//					}
+//
+//				}
+//
+//			}
+		
+
 		cl.swapCellLocations(cell1, cell2,frame);
 		//check if cells have been removed from all their locations
 		Set<Integer> frames=cl.getFrames(cell1);
@@ -143,8 +229,8 @@ public class Cells extends Hashtable<Integer, Cell> implements Serializable
 		if(frames==null){
 			cellDeleted=true;
 			swapDaughters(cell2, cell1, 1);
-			moveMothers(cell1,cell2);
-			super.remove(cell1.getId());
+//			moveMothers(cell1,cell2);			
+			this.remove(cell1);
 			
 		}
 		frames=cl.getFrames(cell2);
@@ -154,9 +240,8 @@ public class Cells extends Hashtable<Integer, Cell> implements Serializable
 			}
 
 			cellDeleted=true;
-
-			moveMothers(cell2,cell1);
-			super.remove(cell2.getId());
+//			moveMothers(cell2,cell1);
+			this.remove(cell2);
 		}
 		if(!cellDeleted){
 			swapDaughters(cell1,cell2,0);
@@ -250,7 +335,7 @@ public class Cells extends Hashtable<Integer, Cell> implements Serializable
 		return null;
 	}
 	
-	private double overlap(Roi roi1, Roi roi2){
+	public static double overlap(Roi roi1, Roi roi2){
 		 double res=0;
 		 Rectangle r1=roi1.getBounds();
 		 Rectangle r2=roi2.getBounds();
@@ -260,6 +345,13 @@ public class Cells extends Hashtable<Integer, Cell> implements Serializable
 		 }
 		 return res;
 	 }
+	public void removeSublineage(Cell curCell) {
+		Set<Cell> desces=curCell.getAllDescendants();
+		for(Cell cell:desces){
+			this.remove(cell);
+		}
+		this.remove(curCell);		
+	}
 		
 	
 	
