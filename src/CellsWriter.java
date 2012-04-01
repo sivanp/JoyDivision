@@ -22,14 +22,13 @@ public class CellsWriter {
 		out = new PrintStream(fos);
 		out.println("---cell ids---");
 //			String res="---cell ids---\n";
-
 			//output all the cell by ids.
 			Set<Integer> cellIds=cells.keySet();
 			Iterator<Integer> iter=cellIds.iterator();
 			while(iter.hasNext()){
 				Integer cellId=iter.next();
 				Cell curCell=cells.get(cellId);
-				out.println("cell id = " +cellId.toString()+" ; "+curCell.getName());		
+				out.println("cell id = " +cellId.toString()+" ; "+curCell.getName()+" "+curCell.isDies()+" "+curCell.getRemark());		
 			}
 			
 			out.println("\n---cell poly---");	

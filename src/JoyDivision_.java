@@ -62,6 +62,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	JButton butDeleteCell;
 	JButton butDeleteCellLocations;
 	JButton butSwapCells;
+	JButton but;
 	JButton butAddMom;
 	JButton butRemoveMom;
 	JToggleButton butContMode;
@@ -72,11 +73,15 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	JTextField txtCellName;
 	JTextField textMomId;
 	JTextField txtMomName;
+	JCheckBox checkBoxCellDies;
+	JTextField txtRemark;
+	
 	JMenuBar menuBar;
 	JMenu fileMenu;
 	JMenuItem menuItemSaveStruct;
 	JMenuItem menuItemLoadStruct;
 	JMenuItem menuItemExportStruct;
+	 	
 	JMenu viewMenu;
 	
 	JCheckBoxMenuItem menuItemDisplayNames;
@@ -301,8 +306,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		c.gridwidth=3;
 		c.weightx=0;
 		c.gridx=6;
-		c.gridy=0;
-		c.gridwidth=1;
+		c.gridy=0;		
 		panel.add(new JLabel("cell name:"),c);
 
 		txtCellName=new JTextField("");
@@ -339,13 +343,40 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		c.gridy=1;
 		panel.add(txtMomName,c);
 		
+		c.gridwidth=3;
+		c.weightx=0;
+		c.gridx=0;
+		c.gridy=2;
+		panel.add(new JLabel("cell death:"),c);
+		
+		checkBoxCellDies = new JCheckBox();
+		c.gridwidth=3;
+		c.weightx=0.5;
+		c.gridx=3;
+		c.gridy=2;
+		panel.add(checkBoxCellDies,c);
+		checkBoxCellDies.addActionListener(this);
+		
+		c.gridwidth=3;
+		c.weightx=0;
+		c.gridx=6;
+		c.gridy=2;
+		panel.add(new JLabel("remark:"),c);
+		
+		txtRemark = new JTextField();
+		c.gridwidth=3;
+		c.weightx=0.5;
+		c.gridx=9;
+		c.gridy=2;
+		panel.add(txtRemark,c);
+		txtRemark.addActionListener(this);
 		
 		butGetCell = new JButton("Get Cell");
 		butGetCell.addActionListener(this);
 		c.gridwidth=6;
 		c.weightx=0;
 		c.gridx=0;
-		c.gridy=2;
+		c.gridy=3;
 		c.insets=new Insets(3, 3, 3, 3);
 		panel.add(butGetCell,c);
 
@@ -353,33 +384,33 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		butAddLoc.addActionListener(this);
 		c.gridwidth=6;
 		c.gridx=6;
-		c.gridy=2;
+		c.gridy=3;
 		panel.add(butAddLoc,c);
 		
 		butCellDivision = new JButton("Cell Division");
 		butCellDivision.addActionListener(this);
 		c.gridwidth=6;
 		c.gridx=0;
-		c.gridy=3;
+		c.gridy=4;
 		panel.add(butCellDivision,c);	
 		
 		butContMode = new JToggleButton("Cont Mode");		
 		butContMode.addActionListener(this);
 		c.gridwidth=6;
 		c.gridx=6;
-		c.gridy=3;
+		c.gridy=4;
 		panel.add(butContMode,c);
 				
 		butDeleteCell = new JButton("Delete Cell");
 		butDeleteCell.addActionListener(this);	
 		c.gridx=0;
-		c.gridy=4;
+		c.gridy=5;
 		panel.add(butDeleteCell,c);
 		
 		butDeleteCellLocations = new JButton("Delete frame");
 		butDeleteCellLocations.addActionListener(this);		
 		c.gridx=6;
-		c.gridy=4;
+		c.gridy=5;
 		panel.add(butDeleteCellLocations,c);
 		
 		butCellStart = new JButton("Cell Start");
@@ -387,7 +418,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		c.weightx=0;
 		c.gridwidth=6;
 		c.gridx=0;
-		c.gridy=5;
+		c.gridy=6;
 		panel.add(butCellStart,c);
 
 		butCellEnd = new JButton("Cell End");
@@ -395,25 +426,25 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		c.weightx=0.1;
 		c.gridwidth=6;
 		c.gridx=6;
-		c.gridy=5;
+		c.gridy=6;
 		panel.add(butCellEnd,c);
 
 		butAddMom = new JButton("Add Mother");
 		butAddMom.addActionListener(this);		
 		c.gridx=0;
-		c.gridy=6;
+		c.gridy=7;
 		panel.add(butAddMom,c);		
 		
 		butRemoveMom = new JButton("Remove Mother");
 		butRemoveMom.addActionListener(this);		
 		c.gridx=6;
-		c.gridy=6;
+		c.gridy=7;
 		panel.add(butRemoveMom,c);
 	
 		butSwapCells = new JButton("Swap cells");
 		butSwapCells.addActionListener(this);
 		c.gridx=0;
-		c.gridy=7;
+		c.gridy=8;
 		panel.add(butSwapCells,c);
 		
 		
@@ -479,10 +510,14 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 			this.textMomId.setText("");
 			this.txtCellName.setText("");
 			this.txtMomName.setText("");
+			this.checkBoxCellDies.setSelected(false);
+			this.txtRemark.setText("");
 		}
 		else{		
 			this.textCellId.setText(String.valueOf(curCell.getId()));
 			this.txtCellName.setText(curCell.getName());
+			this.checkBoxCellDies.setSelected(curCell.isDies());			
+			this.txtRemark.setText(curCell.getRemark());
 			Set<Cell> moms=curCell.getMothers();
 			if(moms==null || moms.isEmpty()){
 				this.textMomId.setText("");
@@ -516,6 +551,27 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	}
 
 	public void actionPerformed(ActionEvent e){		
+		if (e.getSource() == checkBoxCellDies) {
+			if(curCell==null){
+				IJ.showMessage("cannot add mother: no current cell");
+				return;
+			}
+			if(checkBoxCellDies.isSelected()){
+				curCell.setDies(true);
+			}
+			else{
+				curCell.setDies(false);
+			}
+			this.setCellsGui();
+		}
+		if(e.getSource() == txtRemark){
+			if(curCell==null){
+				IJ.showMessage("cannot add mother: no current cell");
+				return;
+			}
+			curCell.setRemark(txtRemark.getText());
+			this.setCellsGui();
+		}
 		if (e.getSource() == butGetCell) {
 			mouseListening=true;
 
@@ -628,17 +684,11 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 				if(slice==null){
 					return;
 				}
-				boolean removed=curCell.deleteLocation(frame);			
-				while(removed){				
-					frame=this.stack2frameMap.get(++slice);
-					if(frame==null){
-						return;
-					}
-					removed=curCell.deleteLocation(frame);				
-				}
+				boolean removed=curCell.deleteLocationFollowing(frame);	
 			}
 		}
-
+		
+		
 		else if(e.getSource()==butSwapCells){
 			GenericDialog gd=new GenericDialog("Swap cells");
 			int id1=-1;

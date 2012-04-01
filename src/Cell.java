@@ -20,12 +20,15 @@ public class Cell implements Serializable, Comparable<Cell>
 	private static final long serialVersionUID = 1L;
 	protected Cells parentCells;
 	protected int id;
-
+	protected boolean dies;
+	protected String remark;
 
 	Cell(int id,Cells parentCells)
 	{
 		this.parentCells = parentCells;
 		this.id = id;
+		this.dies=false;
+		this.remark="";
 	}
 
 
@@ -184,6 +187,24 @@ public class Cell implements Serializable, Comparable<Cell>
 		return parentCells.getCl().getCellLocationInFrame(this, frame);
 	}
 
+	public boolean isDies() {
+		return dies;
+	}
+
+
+	public void setDies(boolean dies) {
+		this.dies = dies;
+	}
+
+
+	public String getRemark() {
+		return remark;
+	}
+
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
 	/**
 	 * Dynamically goes over the parentsCells structure to issue a name for this cell 
 	 * @return a String representing the name of this cell
@@ -241,6 +262,18 @@ public class Cell implements Serializable, Comparable<Cell>
 		return res;
 	}
 
+	 public boolean deleteLocationFollowing(int frame) {
+		 	boolean res=true;
+		 	SortedSet<Integer> frames=this.getFrames();
+		 	frames=frames.tailSet(frame);
+		 	for(Integer f: frames){
+		 		boolean r=parentCells.removeCellLocation(this, f);
+		 		if(!r){
+		 			res=false;
+		 		}
+		 	}
+			return res;
+	 }
 
 	@Override
 	public int compareTo(Cell otherCell) {

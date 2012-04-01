@@ -37,6 +37,8 @@
  */
 
 import static java.lang.Math.*;
+
+import java.text.NumberFormat;
 import java.util.*;
 
 public class HungarianAlgorithm {
@@ -164,15 +166,32 @@ public class HungarianAlgorithm {
 		int[] zero_RC = new int[2];								//Position of last zero from Step 4.
 		int step = 1;											
 		boolean done = false;
+		
+		double[][] prevcost=cost;
+		
 		while (done == false)	//main execution loop
 		{ 
+//			String rowprint="";
+//			for(int m=0;m<cost.length; m++){				
+//				for(int n=0; n<cost[m].length;n++){
+//					NumberFormat nf = NumberFormat.getInstance(); // get instance
+//					nf.setMaximumFractionDigits(2); // set decimal places
+//					String s = nf.format(cost[m][n]);
+//					rowprint+=s+" ";
+//				}
+//				rowprint+="\n";
+//			}
+//			System.out.println("==cost====");
+//			System.out.println(rowprint);
+			System.out.println("hungarian step "+step);
+			
 			switch (step)
 		    {
-				case 1:
-					step = hg_step1(step, cost);     
+				case 1:					
+					step = hg_step1(step, cost);					
 		    	    break;
 		    	case 2:
-		    	    step = hg_step2(step, cost, mask, rowCover, colCover);
+		    	    step = hg_step2(step, cost, mask, rowCover, colCover);		    	   
 					break;
 		    	case 3:
 		    	    step = hg_step3(step, mask, colCover);

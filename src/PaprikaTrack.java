@@ -168,6 +168,7 @@ public class PaprikaTrack{
 		//need to check unmatched cells for divisions
 		//Are any cells are matched to a significantly smaller cell? 
 		for (i=0; i<mapping.length; i++){
+			System.out.println("i in mapping is: "+i);
 			int cellInd=mapping[i][0];
 			int targetPolyInd=mapping[i][1];
 			PolyProperty p=polys.get(cellInd);
