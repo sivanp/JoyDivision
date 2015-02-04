@@ -52,7 +52,11 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	double overlapingRatio=0.5;
 	double consecAreaRatio=0.7;
 	
-	
+	public enum cellFates {
+		   DIE,TILLEND, OUT, FUSE, DIVABNORMALLY,SICK;
+		}
+
+
 	//GUI Stuff
 	JPanel panel;
 	JFrame frame;
@@ -74,6 +78,13 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	JTextField textMomId;
 	JTextField txtMomName;
 	JCheckBox checkBoxCellDies;
+	JCheckBox checkBoxCellOut;
+	JCheckBox checkBoxCellTillEnd;
+	JCheckBox checkBoxCellFuses;
+	JCheckBox checkBoxCelldivAbnormally;
+	JCheckBox checkBoxCellLooksSick;
+	//ButtonGroup cellsChecksGroup = new ButtonGroup();
+	
 	JTextField txtRemark;
 	
 	JMenuBar menuBar;
@@ -113,60 +124,6 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 	public void run(ImageProcessor ip) {
 
 		createGui();
-		//				Cell cell1=cellsStruct.addNewCell();		
-		try {			
-			//					Roi roi1=new Roi(100,100,20,20);
-			//					IJ.showMessage("image of ROI is:"+roi1.getImage());
-			//					roi1=imp.getRoi();
-			//					IJ.showMessage("image of ROI is:"+roi1.getImage());
-			//					Polygon poly=roi1.getPolygon();
-			//					roi1=new PolygonRoi(poly,Roi.FREELINE);
-			//					IJ.showMessage("image of ROI is:"+roi1.getImage());
-			//					roi1.setImage(null);
-			//					cell1.addLocation(1003, roi1);
-			//			cell1.addLocation(1002, roi1);
-			//			cell1.addLocation(1001, roi1);
-			//			Cell cell2=cellsStruct.addNewCell();
-			//			cell2.addMother(cell1);
-			//			Cell cell3=cellsStruct.addNewCell();
-			//			cell2.addDaughter(cell3);
-			//			cell1.addMother(cell3);
-			//			cell3.addDaughter(cell1);			
-			//			IJ.showMessage("before dissociating cell2 and cell1: "+cellsStruct.toString());
-			//			cellsStruct.dissociateMotherDaughter(cell2,cell1);
-			//			IJ.showMessage("after dissociating cell2 and cell1: "+cellsStruct.toString());			
-			//			cellsStruct.remove(cell2);
-			//			IJ.showMessage("after deleting 2: "+cellsStruct.toString());
-			//			cell3.addMother(cell2);
-			//			cell3.addMother(cell1);
-			//			cellsStruct.dissociateMotherDaughter(cell3, cell1);
-			//			IJ.showMessage("after dissociating cell3 to cell1 wrong: "+cellsStruct.toString());
-			//			cellsStruct.dissociateMotherDaughter(cell1, cell3);
-			//			IJ.showMessage("after dissociating cell3 to cell1 right: "+cellsStruct.toString());
-			//			cell1.addDaughter(cell3);
-			//			IJ.showMessage("after adding cell3 to cell1 right: "+cellsStruct.toString());
-			//			cellsStruct.remove(cell1);
-			//			IJ.showMessage("after removing cell1: "+cellsStruct.toString());
-			//			cellsStruct.remove(cell3);
-			//			IJ.showMessage("after removing cell3: "+cellsStruct.toString());
-			//
-			//
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}		
-		//				IJ.showMessage("before save: "+cellsStruct.toString());
-		//				String filename="C:/Users/sivan-nqb/Desktop/cellStruct";
-		//				saveCellsStruct(filename);
-		//				Cells cellsStructLoaded = loadCellsStruct(filename);
-		//				IJ.showMessage("after save: "+cellsStructLoaded.toString());
-		//
-		//
-		//		
-		//		IJ.showMessage(stack2frameMap.toString());
-		//		
-
-
 	}
 
 	/**
@@ -347,36 +304,118 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		c.weightx=0;
 		c.gridx=0;
 		c.gridy=2;
-		panel.add(new JLabel("cell death:"),c);
-		
-		checkBoxCellDies = new JCheckBox();
-		c.gridwidth=3;
-		c.weightx=0.5;
-		c.gridx=3;
-		c.gridy=2;
-		panel.add(checkBoxCellDies,c);
-		checkBoxCellDies.addActionListener(this);
-		
-		c.gridwidth=3;
-		c.weightx=0;
-		c.gridx=6;
-		c.gridy=2;
 		panel.add(new JLabel("remark:"),c);
 		
 		txtRemark = new JTextField();
 		c.gridwidth=3;
 		c.weightx=0.5;
-		c.gridx=9;
+		c.gridx=3;
 		c.gridy=2;
 		panel.add(txtRemark,c);
 		txtRemark.addActionListener(this);
+		
+		c.gridwidth=2;
+		c.weightx=0;
+		c.gridx=6;
+		c.gridy=2;
+		panel.add(new JLabel("cell death:"),c);
+		
+
+		checkBoxCellDies = new JCheckBox();
+		c.gridwidth=1;
+		c.weightx=0.5;
+		c.gridx=8;
+		c.gridy=2;
+		panel.add(checkBoxCellDies,c);
+		checkBoxCellDies.addActionListener(this);
+		
+		
+		c.gridwidth=1;
+		c.weightx=0;
+		c.gridx=9;
+		c.gridy=2;
+		panel.add(new JLabel("out:"),c);
+		
+		checkBoxCellOut = new JCheckBox();
+		c.gridwidth=1;
+		c.weightx=0.5;
+		c.gridx=11;
+		c.gridy=2;
+		panel.add(checkBoxCellOut,c);
+		checkBoxCellOut.addActionListener(this);
+		
+			
+		c.gridwidth=2;
+		c.weightx=0;
+		c.gridx=0;
+		c.gridy=3;
+		panel.add(new JLabel("till end:"),c);
+		
+		checkBoxCellTillEnd = new JCheckBox();
+		c.gridwidth=1;
+		c.weightx=0.5;
+		c.gridx=2;
+		c.gridy=3;
+		panel.add(checkBoxCellTillEnd,c);
+		checkBoxCellTillEnd.addActionListener(this);
+		
+		c.gridwidth=2;
+		c.weightx=0;
+		c.gridx=3;
+		c.gridy=3;
+		panel.add(new JLabel("fuses:"),c);
+		
+		checkBoxCellFuses = new JCheckBox();
+		c.gridwidth=1;
+		c.weightx=0.5;
+		c.gridx=5;
+		c.gridy=3;
+		panel.add(checkBoxCellFuses,c);
+		checkBoxCellFuses.addActionListener(this);
+		
+		c.gridwidth=2;
+		c.weightx=0;
+		c.gridx=6;
+		c.gridy=3;
+		panel.add(new JLabel("div bad:"),c);
+		
+		checkBoxCelldivAbnormally = new JCheckBox();
+		c.gridwidth=1;
+		c.weightx=0.5;
+		c.gridx=8;
+		c.gridy=3;
+		panel.add(checkBoxCelldivAbnormally,c);
+		checkBoxCelldivAbnormally.addActionListener(this);
+		
+		c.gridwidth=2;
+		c.weightx=0;
+		c.gridx=9;
+		c.gridy=3;
+		panel.add(new JLabel("sick:"),c);
+		
+		checkBoxCellLooksSick = new JCheckBox();
+		c.gridwidth=1;
+		c.weightx=0.5;
+		c.gridx=11;
+		c.gridy=3;
+		panel.add(checkBoxCellLooksSick,c);
+		checkBoxCellLooksSick.addActionListener(this);
+		
+		/*cellsChecksGroup.add(checkBoxCellDies);
+		cellsChecksGroup.add(checkBoxCellOut);
+		cellsChecksGroup.add(checkBoxCellTillEnd);
+		cellsChecksGroup.add(checkBoxCellFuses);
+		cellsChecksGroup.add(checkBoxCelldivAbnormally);
+		cellsChecksGroup.add(checkBoxCellLooksSick);
+		*/
+		
 		
 		butGetCell = new JButton("Get Cell");
 		butGetCell.addActionListener(this);
 		c.gridwidth=6;
 		c.weightx=0;
 		c.gridx=0;
-		c.gridy=3;
+		c.gridy=5;
 		c.insets=new Insets(3, 3, 3, 3);
 		panel.add(butGetCell,c);
 
@@ -384,33 +423,33 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		butAddLoc.addActionListener(this);
 		c.gridwidth=6;
 		c.gridx=6;
-		c.gridy=3;
+		c.gridy=5;
 		panel.add(butAddLoc,c);
 		
 		butCellDivision = new JButton("Cell Division");
 		butCellDivision.addActionListener(this);
 		c.gridwidth=6;
 		c.gridx=0;
-		c.gridy=4;
+		c.gridy=6;
 		panel.add(butCellDivision,c);	
 		
 		butContMode = new JToggleButton("Cont Mode");		
 		butContMode.addActionListener(this);
 		c.gridwidth=6;
 		c.gridx=6;
-		c.gridy=4;
+		c.gridy=6;
 		panel.add(butContMode,c);
 				
 		butDeleteCell = new JButton("Delete Cell");
 		butDeleteCell.addActionListener(this);	
 		c.gridx=0;
-		c.gridy=5;
+		c.gridy=7;
 		panel.add(butDeleteCell,c);
 		
 		butDeleteCellLocations = new JButton("Delete frame");
 		butDeleteCellLocations.addActionListener(this);		
 		c.gridx=6;
-		c.gridy=5;
+		c.gridy=7;
 		panel.add(butDeleteCellLocations,c);
 		
 		butCellStart = new JButton("Cell Start");
@@ -418,7 +457,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		c.weightx=0;
 		c.gridwidth=6;
 		c.gridx=0;
-		c.gridy=6;
+		c.gridy=8;
 		panel.add(butCellStart,c);
 
 		butCellEnd = new JButton("Cell End");
@@ -426,25 +465,25 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		c.weightx=0.1;
 		c.gridwidth=6;
 		c.gridx=6;
-		c.gridy=6;
+		c.gridy=8;
 		panel.add(butCellEnd,c);
 
 		butAddMom = new JButton("Add Mother");
 		butAddMom.addActionListener(this);		
 		c.gridx=0;
-		c.gridy=7;
+		c.gridy=9;
 		panel.add(butAddMom,c);		
 		
 		butRemoveMom = new JButton("Remove Mother");
 		butRemoveMom.addActionListener(this);		
 		c.gridx=6;
-		c.gridy=7;
+		c.gridy=9;
 		panel.add(butRemoveMom,c);
 	
 		butSwapCells = new JButton("Swap cells");
 		butSwapCells.addActionListener(this);
 		c.gridx=0;
-		c.gridy=8;
+		c.gridy=10;
 		panel.add(butSwapCells,c);
 		
 		
@@ -510,13 +549,23 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 			this.textMomId.setText("");
 			this.txtCellName.setText("");
 			this.txtMomName.setText("");
-			this.checkBoxCellDies.setSelected(false);
 			this.txtRemark.setText("");
+			this.checkBoxCellDies.setSelected(false);			
+			this.checkBoxCellOut.setSelected(false);
+			this.checkBoxCellTillEnd.setSelected(false);
+			this.checkBoxCellFuses.setSelected(false);
+			this.checkBoxCelldivAbnormally.setSelected(false);			
+			this.checkBoxCellLooksSick.setSelected(false);
 		}
-		else{		
+		else{			
 			this.textCellId.setText(String.valueOf(curCell.getId()));
 			this.txtCellName.setText(curCell.getName());
 			this.checkBoxCellDies.setSelected(curCell.isDies());			
+			this.checkBoxCellOut.setSelected(curCell.isOut());
+			this.checkBoxCellTillEnd.setSelected(curCell.isTillEnd());
+			this.checkBoxCellFuses.setSelected(curCell.isFuses());
+			this.checkBoxCelldivAbnormally.setSelected(curCell.isDivAbnomally());			
+			this.checkBoxCellLooksSick.setSelected(curCell.isLooksSick());
 			this.txtRemark.setText(curCell.getRemark());
 			Set<Cell> moms=curCell.getMothers();
 			if(moms==null || moms.isEmpty()){
@@ -550,20 +599,75 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		return pt.getSite();
 	}
 
-	public void actionPerformed(ActionEvent e){		
+	public void actionPerformed(ActionEvent e){
 		if (e.getSource() == checkBoxCellDies) {
-			if(curCell==null){
-				IJ.showMessage("cannot add mother: no current cell");
+			if(curCell==null){			
+				setCellsGui();
 				return;
 			}
-			if(checkBoxCellDies.isSelected()){
-				curCell.setDies(true);
+			else{
+				SetCellFate(curCell, cellFates.DIE);
+				this.setCellsGui();
+			}
+		}
+
+		if (e.getSource() == checkBoxCellOut) {
+			if(curCell==null){
+				setCellsGui();
+				return;
+			}	
+			else{
+				SetCellFate(curCell, cellFates.OUT);
+				this.setCellsGui();
+			}
+		}
+
+		if (e.getSource() == checkBoxCellTillEnd) {
+			if(curCell==null){			
+				setCellsGui();
+				return;
 			}
 			else{
-				curCell.setDies(false);
+				SetCellFate(curCell, cellFates.TILLEND);
+				this.setCellsGui();
 			}
-			this.setCellsGui();
+			
 		}
+
+		if (e.getSource() == checkBoxCellFuses) {
+			if(curCell==null){			
+				setCellsGui();
+				return;
+			}
+			else{
+				SetCellFate(curCell, cellFates.FUSE);
+				this.setCellsGui();
+			}
+		}
+
+		if (e.getSource() == checkBoxCelldivAbnormally) {
+			if(curCell==null){			
+				setCellsGui();
+				return;
+			}
+			else{			
+				SetCellFate(curCell, cellFates.DIVABNORMALLY);
+				this.setCellsGui();
+			}
+		}
+
+		if (e.getSource() == checkBoxCellLooksSick) {
+			if(curCell==null){			
+				setCellsGui();
+				return;
+			}
+			else{
+				SetCellFate(curCell, cellFates.SICK);
+				this.setCellsGui();
+			}
+		}
+
+			
 		if(e.getSource() == txtRemark){
 			if(curCell==null){
 				IJ.showMessage("cannot add mother: no current cell");
@@ -880,8 +984,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 		}
 	}
 	public void itemStateChanged(ItemEvent e){
-		IJ.showMessage("itemPerformed", "at: "+e);	
-	}
+		}
 
 
 	/**
@@ -1587,6 +1690,100 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 			res=true;
 		}
 		return res;
+	}
+	
+	private void SetCellFate(Cell cell,cellFates fate){
+		if(fate==cellFates.DIE){
+			if(cell.isDies()){
+				cell.setDies(false);
+				checkBoxCellDies.setSelected(false);
+			}
+			else{
+				//SetCellNoFate(cell);
+				cell.setDies(true);
+				checkBoxCellDies.setSelected(true);
+			}
+			
+		}
+		
+		if(fate==cellFates.DIVABNORMALLY){
+			if(cell.isDivAbnomally()){
+				cell.setDivAbnormally(false);
+				checkBoxCelldivAbnormally.setSelected(false);
+			}
+			else{
+				//SetCellNoFate(cell);
+				cell.setDivAbnormally(true);
+				checkBoxCelldivAbnormally.setSelected(true);
+			}
+		}
+			if(fate==cellFates.FUSE){
+				if(cell.isFuses()){
+					cell.setFuses(false);
+					checkBoxCellFuses.setSelected(false);
+				}
+				else{
+					//SetCellNoFate(cell);
+					cell.setFuses(true);
+					checkBoxCellFuses.setSelected(true);
+				}
+				
+			}
+			if(fate==cellFates.OUT){
+				if(cell.isOut()){
+					cell.setOut(false);
+					checkBoxCellOut.setSelected(false);
+				}
+				else{
+					//SetCellNoFate(cell);
+					cell.setOut(true);
+					checkBoxCellOut.setSelected(true);
+				}
+				
+			}
+			if(fate==cellFates.SICK){
+				if(cell.isLooksSick()){
+					cell.setLooksSick(false);
+					checkBoxCellLooksSick.setSelected(false);
+				}
+				else{
+					//SetCellNoFate(cell);
+					cell.setLooksSick(true);
+					checkBoxCellLooksSick.setSelected(true);
+				}
+				
+			}	
+			
+			if(fate==cellFates.TILLEND){
+				if(cell.isTillEnd()){
+					cell.setTillEnd(false);
+					checkBoxCellTillEnd.setSelected(false);
+				}
+				else{
+					//SetCellNoFate(cell);
+					cell.setTillEnd(true);
+					checkBoxCellTillEnd.setSelected(true);
+				}
+				
+			}
+		
+		
+		
+	}
+	
+	private void SetCellNoFate(Cell cell){
+		cell.setDies(false);
+		checkBoxCellDies.setSelected(false);
+		cell.setDivAbnormally(false);
+		checkBoxCelldivAbnormally.setSelected(false);
+		cell.setFuses(false);
+		checkBoxCellFuses.setSelected(false);
+		cell.setLooksSick(false);
+		checkBoxCellLooksSick.setSelected(false);
+		cell.setOut(false);
+		checkBoxCellOut.setSelected(false);
+		cell.setTillEnd(false);
+		checkBoxCellTillEnd.setSelected(false);
 	}
 
 	@Override

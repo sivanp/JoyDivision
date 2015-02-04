@@ -1,9 +1,12 @@
+import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
 
 public class PathTokens{
 		String path;
 		String pre;
+		String channel;
+		int offset;
 		
 		int site;
 		int frame;
@@ -49,17 +52,29 @@ public class PathTokens{
 		
 		// the path is sometimes the label which holds much more
 		public PathTokens(String path){		
-			String[] pathparts = path.split(".tif");			
+			if(!path.contains(".tif")){//this is not a tif file				
+				return;
+			}
+			String[] pathparts = path.split(".tif");
+			
 			path=pathparts[0];
 			String[] tokens= path.split("_");
 			int n=tokens.length;
-			if(n>2){
+			if("img".compareTo(tokens[0])!=0){ //movie maker format
 				pre="";
 				for (int i=0; i<n-2; i++){
 					pre+=tokens[i]+"_";
 				}
 				site=Integer.parseInt(tokens[n-2]);
 				frame=Integer.parseInt(tokens[n-1]);
+				isValid=true;
+			}
+			else{
+				pre=tokens[0]+"_"+tokens[2]+"_"+tokens[3];
+				site=-1;
+				frame=Integer.parseInt(tokens[1]);
+				channel=tokens[2];
+				offset=Integer.valueOf(tokens[3]);
 				isValid=true;
 			}
 //			StringTokenizer tokenizer = new StringTokenizer(path,"._");
@@ -76,11 +91,26 @@ public class PathTokens{
 //			frame=Integer.parseInt(token);
 		}
 		
+		public int getOffset() {
+			return offset;
+		}
+
+		public void setOffset(int offset) {
+			this.offset = offset;
+		}
+
+		public String getChannel() {
+			return channel;
+		}
+
+		public void setChannel(String channel) {
+			this.channel = channel;
+		}
+
 		public static int getCurFrame(ImagePlus imp){
 			ImageStack stack=imp.getStack();
 			String label=stack.getSliceLabel(imp.getCurrentSlice());
 			PathTokens pt=new PathTokens(label);
 			return pt.getFrame();
 		}
-
 	}

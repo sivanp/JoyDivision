@@ -28,7 +28,7 @@ public class CellsWriter {
 			while(iter.hasNext()){
 				Integer cellId=iter.next();
 				Cell curCell=cells.get(cellId);
-				out.println("cell id = " +cellId.toString()+" ; "+curCell.getName()+" "+curCell.isDies()+" "+curCell.getRemark());		
+				out.println("cell id = " +cellId.toString()+" ; "+curCell.getName()+" "+curCell.isDies()+" "+curCell.isOut()+" "+curCell.isTillEnd()+" "+curCell.isFuses()+" "+curCell.isDivAbnomally()+" "+curCell.isLooksSick()+" "+curCell.getRemark()+" ");		
 			}
 			
 			out.println("\n---cell poly---");	
@@ -106,67 +106,4 @@ public class CellsWriter {
 			ex.printStackTrace();
 		}
 	}
-	
-//	public static void writeStructureToResultsTable(Cells cells){
-//		ResultsTable positionTable = new ResultsTable();
-//		Set<Integer> cellIds=cells.keySet();
-//		Iterator<Integer> iter=cellIds.iterator();		
-//		while(iter.hasNext()){
-//			Integer cellId=iter.next();
-//			Cell curCell=cells.get(cellId);			
-//			Set<Integer> frames=curCell.getFrames();
-//			if(frames!=null){
-//				frames = new TreeSet<Integer>(frames);
-//				iter=frames.iterator();
-//				while(iter.hasNext()){
-//					positionTable.incrementCounter();
-//					Integer curFrame=iter.next();
-//					positionTable.addValue("id", cellId);
-//					positionTable.addValue("frame", curFrame);
-//					PolyProperty curPoly=curCell.getLocationInFrame(curFrame);
-//					Roi roi=curPoly.getRoi();
-//					positionTable.addValue("Center X",roi.getBounds().getCenterX());
-//					positionTable.addValue("Center Y",roi.getBounds().getCenterY());
-//					if(cells instanceof PropertiesCells){
-//						Set<Integer> propIds=((PropertiesCells)cells).getPropertyIdSet();
-//						Iterator<Integer> piter= propIds.iterator();
-//						while(piter.hasNext()){
-//							int propId=piter.next();
-//							String propName=((PropertiesCells)cells).getPropertyName(propId);							
-//							Double propVal=curPoly.getPropertyValue(propId);
-//							if(propVal!=null){
-//								positionTable.addValue(propName, propVal);
-//							}
-//						}
-//						
-//						
-//				}
-//			}
-//		}
-//	}
-//}
-
-
-	
-//    public static void serializeObjectToXML(String xmlFileLocation,Object objectToSerialize) throws Exception 
-//    {
-//        FileOutputStream os = new FileOutputStream(xmlFileLocation);
-//        XMLEncoder encoder = new XMLEncoder(os);
-//        encoder.writeObject(objectToSerialize);
-//        encoder.close();
-//    }
-//
-//
-//
-//public static void writeXML(Cells cells, String filename)
-//{
-//	try {
-//		Set<Cell> cs=cells.getCellsInFrame(1001);
-//		serializeObjectToXML(filename,cs.iterator().next());
-//	} catch (Exception e) {
-//		// TODO Auto-generated catch block
-//		e.printStackTrace();
-//	}
-//}
-
 }
