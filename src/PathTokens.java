@@ -75,7 +75,7 @@ public class PathTokens{
 				frame=Integer.parseInt(tokens[1]);
 				channel=tokens[2];
 				offset=Integer.valueOf(tokens[3]);
-				isValid=true;
+				isValid=true; 
 			}
 //			StringTokenizer tokenizer = new StringTokenizer(path,"._");
 //			String token=tokenizer.nextToken();
