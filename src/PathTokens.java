@@ -1,4 +1,4 @@
-import ij.IJ;
+/*import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
 
@@ -114,3 +114,4 @@ public class PathTokens{
 			return pt.getFrame();
 		}
 	}
+*/

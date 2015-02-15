@@ -33,7 +33,7 @@ import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 
 import javax.swing.*;
-
+ 
 public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionListener, ItemListener, ImageListener, KeyListener  {
 	ImagePlus imp;	
 //	ImagePlus origImp;
@@ -579,7 +579,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 			}	
 
 		}
-	}
+	} 
 	/**
 	 * 
 	 * @return the current frame from the current slice name (in the label)
@@ -791,7 +791,7 @@ public class JoyDivision_  extends MouseAdapter implements PlugInFilter,ActionLi
 				boolean removed=curCell.deleteLocationFollowing(frame);	
 			}
 		}
-		
+		 
 		
 		else if(e.getSource()==butSwapCells){
 			GenericDialog gd=new GenericDialog("Swap cells");
